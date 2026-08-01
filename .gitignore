@@ -1,0 +1,43 @@
+# =============================================
+# .gitignore – Kasir Laporan PHP
+# =============================================
+
+# ---- Konfigurasi lokal (jangan di-commit) ----
+config/local.php
+.env
+.env.local
+
+# ---- Dependency / vendor (jika pakai Composer) ----
+vendor/
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Editor / IDE ----
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# ---- PHP cache / logs ----
+*.log
+*.cache
+error_log
+
+# ---- Upload / temporary ----
+uploads/
+tmp/
+temp/
+
+# ---- Database dump (sensitif) ----
+# sql/schema.sql DIKECUALIKAN (tetap di-commit)
+# Tapi dump data jangan di-commit:
+*.sql.gz
+*.sql.zip
+*_dump.sql
+*_backup.sql
