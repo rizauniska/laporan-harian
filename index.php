@@ -1,231 +1,338 @@
 <?php
-// index.php – Halaman Utama / Dashboard Riwayat Laporan dengan Tabulator JS
+// index.php – Dashboard Riwayat Laporan | AdminLTE 4.1.0
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Riwayat Laporan – Kasir Apotek &amp; Pendaftaran</title>
-  
-  <!-- Bootstrap 5 CSS & Icons -->
+  <title>Dashboard | Kasir Laporan Keuangan</title>
+  <meta name="description" content="Dashboard riwayat laporan keuangan harian kasir apotek dan pendaftaran.">
+
+  <!-- Bootstrap 5 + Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
-  <!-- Tabulator JS CSS (Bootstrap 5 Theme) -->
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+  <!-- AdminLTE 4 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
+  <!-- Tabulator (Bootstrap 5 theme) -->
   <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_bootstrap5.min.css">
 
   <style>
-    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .card-kpi { border: none; border-radius: 12px; transition: transform 180ms ease, box-shadow 180ms ease; }
-    .card-kpi:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-    .kpi-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-    
-    /* Custom tabulator tweak */
-    #riwayatTable { border-radius: 8px; overflow: hidden; font-size: 0.88rem; }
-    .tabulator .tabulator-header .tabulator-col { font-weight: 700; background-color: #f8f9fa; }
+    /* ---- Sidebar brand ---- */
+    .brand-text { font-size: 1rem; font-weight: 700; letter-spacing: .02em; }
+
+    /* ---- Small-box KPI tweaks ---- */
+    .small-box { border-radius: 10px; overflow: hidden; }
+    .small-box .inner h4 { font-size: 1.2rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .small-box .inner p  { font-size: .8rem; font-weight: 600; opacity: .9; margin-bottom: 0; }
+    .small-box-icon { font-size: 3rem; opacity: .25; }
+
+    /* ---- Tabulator tweaks ---- */
+    #riwayatTable { border-radius: 6px; overflow: hidden; font-size: .875rem; }
+    .tabulator .tabulator-header .tabulator-col { font-weight: 700; }
     .tabulator-row .tabulator-cell { vertical-align: middle; }
-    .badge-date { font-weight: 600; font-size: 0.85rem; }
+    .badge-date { font-weight: 600; font-size: .82rem; }
+
+    /* ---- Filter card ---- */
+    .filter-card .card-header { background: #fff; border-bottom: 2px solid #dee2e6; }
   </style>
 </head>
-<body>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<div class="app-wrapper">
 
-<div id="app">
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-2 shadow-sm">
-    <div class="container-fluid px-4">
-      <span class="navbar-brand fw-bold me-auto">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard Riwayat Laporan
-      </span>
-      <div class="d-flex align-items-center gap-2">
-        <a href="laporan.php" class="btn btn-light btn-sm fw-semibold">
-          <i class="bi bi-plus-circle-fill text-primary me-1"></i> Input / Edit Laporan
-        </a>
-      </div>
+  <!-- ============ TOP NAVBAR ============ -->
+  <nav class="app-header navbar navbar-expand bg-white shadow-sm border-bottom">
+    <div class="container-fluid">
+      <!-- Sidebar Toggle -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+            <i class="bi bi-list fs-5"></i>
+          </a>
+        </li>
+      </ul>
+      <!-- Brand -->
+      <a href="index.php" class="navbar-brand ms-2 d-none d-md-flex align-items-center gap-2">
+        <i class="bi bi-clipboard2-data text-primary fs-5"></i>
+        <span class="brand-text text-dark">Kasir Laporan Keuangan</span>
+      </a>
+      <!-- Right nav -->
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <li class="nav-item">
+          <a href="laporan.php" class="btn btn-primary btn-sm fw-semibold">
+            <i class="bi bi-plus-circle-fill me-1"></i> Input / Edit Laporan
+          </a>
+        </li>
+      </ul>
     </div>
   </nav>
 
-  <!-- MAIN CONTAINER -->
-  <div class="container-fluid px-4 py-4">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <!-- Sidebar Brand -->
+    <div class="sidebar-brand">
+      <a href="index.php" class="brand-link d-flex align-items-center gap-2 px-3 py-3">
+        <i class="bi bi-clipboard2-data text-primary fs-4"></i>
+        <span class="brand-text fw-bold fs-6">Kasir Laporan</span>
+      </a>
+    </div>
+    <!-- Sidebar Menu -->
+    <div class="sidebar-wrapper">
+      <nav class="mt-2">
+        <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
+          <li class="nav-header">MENU UTAMA</li>
+          <li class="nav-item">
+            <a href="index.php" class="nav-link active">
+              <i class="nav-icon bi bi-speedometer2"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="laporan.php" class="nav-link">
+              <i class="nav-icon bi bi-file-earmark-medical"></i>
+              <p>Input / Edit Laporan</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
 
-    <!-- KPI STAT CARDS -->
-    <div class="row g-3 mb-4">
-      <div class="col-md col-sm-6">
-        <div class="card card-kpi bg-white p-3 shadow-sm h-100">
-          <div class="d-flex align-items-center gap-3">
-            <div class="kpi-icon bg-primary bg-opacity-10 text-primary">
-              <i class="bi bi-person-badge"></i>
-            </div>
-            <div>
-              <div class="text-muted small fw-semibold">JM dr. Zainuddin</div>
-              <div class="fs-5 fw-bold text-primary" id="statJmZainuddin">Rp 0</div>
-            </div>
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="app-main">
+
+    <!-- Content Header -->
+    <div class="app-content-header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <h3 class="mb-0 fw-bold">
+              <i class="bi bi-speedometer2 text-primary me-2"></i>Dashboard Riwayat Laporan
+            </h3>
           </div>
-        </div>
-      </div>
-
-      <div class="col-md col-sm-6">
-        <div class="card card-kpi bg-white p-3 shadow-sm h-100">
-          <div class="d-flex align-items-center gap-3">
-            <div class="kpi-icon bg-purple bg-opacity-10" style="background:rgba(108,99,255,.12);color:#6c63ff">
-              <i class="bi bi-person-badge-fill"></i>
-            </div>
-            <div>
-              <div class="text-muted small fw-semibold">JM dr. Ali (Program + non Program)</div>
-              <div class="fs-5 fw-bold" style="color:#6c63ff" id="statJmAli">Rp 0</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md col-sm-6">
-        <div class="card card-kpi bg-white p-3 shadow-sm h-100">
-          <div class="d-flex align-items-center gap-3">
-            <div class="kpi-icon bg-success bg-opacity-10 text-success">
-              <i class="bi bi-activity"></i>
-            </div>
-            <div>
-              <div class="text-muted small fw-semibold">Total Pendapatan Fisioterapi</div>
-              <div class="fs-5 fw-bold text-success" id="statFisio">Rp 0</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md col-sm-6">
-        <div class="card card-kpi bg-white p-3 shadow-sm h-100">
-          <div class="d-flex align-items-center gap-3">
-            <div class="kpi-icon bg-warning bg-opacity-10 text-warning">
-              <i class="bi bi-droplet-half"></i>
-            </div>
-            <div>
-              <div class="text-muted small fw-semibold">Total Laboratorium</div>
-              <div class="fs-5 fw-bold text-warning" id="statLab">Rp 0</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md col-sm-6">
-        <div class="card card-kpi bg-white p-3 shadow-sm h-100">
-          <div class="d-flex align-items-center gap-3">
-            <div class="kpi-icon bg-info bg-opacity-10 text-info">
-              <i class="bi bi-people-fill"></i>
-            </div>
-            <div>
-              <div class="text-muted small fw-semibold">Pasien Fisioterapi Rp 90.000</div>
-              <div class="fs-5 fw-bold text-info" id="statFisio90Count">0 Pasien</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md col-sm-6">
-        <div class="card card-kpi bg-white p-3 shadow-sm h-100">
-          <div class="d-flex align-items-center gap-3">
-            <div class="kpi-icon" style="background:rgba(23,162,184,.12);color:#117a8b">
-              <i class="bi bi-p-circle-fill"></i>
-            </div>
-            <div>
-              <div class="text-muted small fw-semibold">Total Parkir</div>
-              <div class="fs-5 fw-bold" style="color:#117a8b" id="statParkir">Rp 0</div>
-            </div>
+          <div class="col-sm-6 text-end">
+            <ol class="breadcrumb float-sm-end mb-0">
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- FILTER TANGGAL TOOLBAR CARD -->
-    <div class="card border-0 shadow-sm rounded-3 mb-3">
-      <div class="card-body p-3">
-        <div class="row g-2 align-items-end">
-          <!-- Filter Tanggal Mulai -->
-          <div class="col-md-3 col-sm-6">
-            <label class="form-label small fw-semibold text-muted mb-1" for="filterStartDate">
-              <i class="bi bi-calendar-event me-1 text-primary"></i> Tanggal Mulai
-            </label>
-            <input type="date" class="form-control form-control-sm" id="filterStartDate">
+    <!-- Content Body -->
+    <div class="app-content">
+      <div class="container-fluid">
+
+        <!-- ===== KPI SMALL-BOX CARDS ===== -->
+        <div class="row g-3 mb-4">
+
+          <!-- JM dr. Zainuddin -->
+          <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+            <div class="small-box text-bg-info">
+              <div class="inner">
+                <h4 id="statJmZainuddin">Rp 0</h4>
+                <p>JM dr. Zainuddin</p>
+              </div>
+              <div class="small-box-icon">
+                <i class="fas fa-user-md"></i>
+              </div>
+              <a href="laporan.php" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-100-hover">
+                Detail <i class="bi bi-arrow-right-circle ms-1"></i>
+              </a>
+            </div>
           </div>
 
-          <!-- Filter Tanggal Selesai -->
-          <div class="col-md-3 col-sm-6">
-            <label class="form-label small fw-semibold text-muted mb-1" for="filterEndDate">
-              <i class="bi bi-calendar-event me-1 text-primary"></i> Tanggal Selesai
-            </label>
-            <input type="date" class="form-control form-control-sm" id="filterEndDate">
+          <!-- JM dr. Ali -->
+          <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+            <div class="small-box text-bg-purple" style="background:#6c63ff!important">
+              <div class="inner">
+                <h4 id="statJmAli">Rp 0</h4>
+                <p>JM dr. Ali (Program + non Program)</p>
+              </div>
+              <div class="small-box-icon">
+                <i class="fas fa-stethoscope"></i>
+              </div>
+              <a href="laporan.php" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-100-hover">
+                Detail <i class="bi bi-arrow-right-circle ms-1"></i>
+              </a>
+            </div>
           </div>
 
-          <!-- Tombol Filter & Reset -->
-          <div class="col-md-3 col-sm-6 d-flex gap-2">
-            <button class="btn btn-primary btn-sm fw-semibold w-100" id="btnApplyDateFilter">
-              <i class="bi bi-funnel-fill me-1"></i> Terapkan Filter
-            </button>
-            <button class="btn btn-outline-secondary btn-sm fw-semibold" id="btnResetDateFilter" title="Reset Filter Tanggal">
-              <i class="bi bi-arrow-counterclockwise"></i> Reset
-            </button>
+          <!-- Fisioterapi -->
+          <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+            <div class="small-box text-bg-success">
+              <div class="inner">
+                <h4 id="statFisio">Rp 0</h4>
+                <p>Total Pendapatan Fisioterapi</p>
+              </div>
+              <div class="small-box-icon">
+                <i class="fas fa-heartbeat"></i>
+              </div>
+              <a href="laporan.php" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-100-hover">
+                Detail <i class="bi bi-arrow-right-circle ms-1"></i>
+              </a>
+            </div>
           </div>
 
-          <!-- Quick Preset Dropdown -->
-          <div class="col-md-3 col-sm-6 text-end">
-            <div class="dropdown">
-              <button class="btn btn-light btn-sm border dropdown-toggle w-100 text-start fw-semibold text-muted" type="button" data-bs-toggle="dropdown">
-                <i class="bi bi-clock-history me-1 text-primary"></i> Pilih Periode Cepat
+          <!-- Laboratorium -->
+          <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+            <div class="small-box text-bg-warning">
+              <div class="inner">
+                <h4 id="statLab">Rp 0</h4>
+                <p>Total Laboratorium</p>
+              </div>
+              <div class="small-box-icon">
+                <i class="fas fa-flask"></i>
+              </div>
+              <a href="laporan.php" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-100-hover">
+                Detail <i class="bi bi-arrow-right-circle ms-1"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Pasien Fisio 90rb -->
+          <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+            <div class="small-box" style="background:#0f766e!important;color:#fff">
+              <div class="inner">
+                <h4 id="statFisio90Count">0 Pasien</h4>
+                <p>Pasien Fisioterapi Rp 90.000</p>
+              </div>
+              <div class="small-box-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <a href="laporan.php" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-100-hover">
+                Detail <i class="bi bi-arrow-right-circle ms-1"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Parkir -->
+          <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+            <div class="small-box text-bg-secondary">
+              <div class="inner">
+                <h4 id="statParkir">Rp 0</h4>
+                <p>Total Parkir</p>
+              </div>
+              <div class="small-box-icon">
+                <i class="fas fa-parking"></i>
+              </div>
+              <a href="laporan.php" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-100-hover">
+                Detail <i class="bi bi-arrow-right-circle ms-1"></i>
+              </a>
+            </div>
+          </div>
+
+        </div><!-- /row KPI -->
+
+        <!-- ===== FILTER TANGGAL ===== -->
+        <div class="card mb-4 shadow-sm filter-card">
+          <div class="card-header py-2">
+            <h5 class="card-title mb-0 fw-bold">
+              <i class="bi bi-funnel-fill text-primary me-2"></i>Filter Periode Laporan
+            </h5>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                <i class="bi bi-dash-lg"></i>
               </button>
-              <ul class="dropdown-menu dropdown-menu-end shadow-sm small">
-                <li><a class="dropdown-item preset-date" href="#" data-preset="all">Semua Laporan</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item preset-date" href="#" data-preset="today">Hari Ini</a></li>
-                <li><a class="dropdown-item preset-date" href="#" data-preset="yesterday">Kemarin</a></li>
-                <li><a class="dropdown-item preset-date" href="#" data-preset="this_month">Bulan Ini</a></li>
-                <li><a class="dropdown-item preset-date" href="#" data-preset="last_month">Bulan Lalu</a></li>
-                <li><a class="dropdown-item preset-date" href="#" data-preset="this_year">Tahun Ini</a></li>
-              </ul>
+            </div>
+          </div>
+          <div class="card-body py-3">
+            <div class="row g-2 align-items-end">
+              <!-- Tanggal Mulai -->
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small fw-semibold text-muted mb-1" for="filterStartDate">
+                  <i class="bi bi-calendar-event me-1 text-primary"></i> Tanggal Mulai
+                </label>
+                <input type="date" class="form-control form-control-sm" id="filterStartDate">
+              </div>
+              <!-- Tanggal Selesai -->
+              <div class="col-md-3 col-sm-6">
+                <label class="form-label small fw-semibold text-muted mb-1" for="filterEndDate">
+                  <i class="bi bi-calendar-event me-1 text-primary"></i> Tanggal Selesai
+                </label>
+                <input type="date" class="form-control form-control-sm" id="filterEndDate">
+              </div>
+              <!-- Tombol Filter & Reset -->
+              <div class="col-md-3 col-sm-6 d-flex gap-2">
+                <button class="btn btn-primary btn-sm fw-semibold w-100" id="btnApplyDateFilter">
+                  <i class="bi bi-funnel-fill me-1"></i> Terapkan Filter
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" id="btnResetDateFilter" title="Reset Filter">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+              </div>
+              <!-- Quick Preset -->
+              <div class="col-md-3 col-sm-6">
+                <div class="dropdown">
+                  <button class="btn btn-light btn-sm border dropdown-toggle w-100 text-start fw-semibold text-muted" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-clock-history me-1 text-primary"></i> Periode Cepat
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow-sm small">
+                    <li><a class="dropdown-item preset-date" href="#" data-preset="all">Semua Laporan</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item preset-date" href="#" data-preset="today">Hari Ini</a></li>
+                    <li><a class="dropdown-item preset-date" href="#" data-preset="yesterday">Kemarin</a></li>
+                    <li><a class="dropdown-item preset-date" href="#" data-preset="this_month">Bulan Ini</a></li>
+                    <li><a class="dropdown-item preset-date" href="#" data-preset="last_month">Bulan Lalu</a></li>
+                    <li><a class="dropdown-item preset-date" href="#" data-preset="this_year">Tahun Ini</a></li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- TABLE CARD -->
-    <div class="card border-0 shadow-sm rounded-3">
-      <div class="card-header bg-white py-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <h5 class="fw-bold mb-0 text-dark">
-          <i class="bi bi-table text-primary me-2"></i> Daftar Riwayat Laporan Keuangan
-        </h5>
-        
-        <!-- TOOLBAR: FILTER TEXT & EXPORT -->
-        <div class="d-flex flex-wrap align-items-center gap-2">
-          <div class="input-group input-group-sm" style="width: 200px;">
-            <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
-            <input type="text" class="form-control border-start-0" id="filterInput" placeholder="Cari tanggal...">
+        <!-- ===== TABLE CARD ===== -->
+        <div class="card shadow-sm">
+          <div class="card-header py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <h5 class="card-title mb-0 fw-bold">
+              <i class="bi bi-table text-primary me-2"></i>Daftar Riwayat Laporan Keuangan
+            </h5>
+            <div class="card-tools d-flex align-items-center gap-2">
+              <!-- Filter Teks -->
+              <div class="input-group input-group-sm" style="width:200px">
+                <span class="input-group-text bg-light"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" class="form-control" id="filterInput" placeholder="Cari tanggal...">
+              </div>
+              <!-- Export -->
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-secondary" id="btnExportCsv" title="Export CSV">
+                  <i class="bi bi-filetype-csv me-1"></i>CSV
+                </button>
+                <button class="btn btn-outline-success" id="btnExportXlsx" title="Export Excel">
+                  <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                </button>
+              </div>
+              <button class="btn btn-primary btn-sm fw-semibold" id="btnRefresh">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+              </button>
+            </div>
           </div>
-
-          <div class="btn-group btn-group-sm">
-            <button class="btn btn-outline-secondary" id="btnExportCsv" title="Export CSV">
-              <i class="bi bi-filetype-csv me-1"></i> CSV
-            </button>
-            <button class="btn btn-outline-success" id="btnExportXlsx" title="Export Excel">
-              <i class="bi bi-file-earmark-excel me-1"></i> Excel
-            </button>
+          <div class="card-body p-3">
+            <div id="riwayatTable"></div>
           </div>
-
-          <button class="btn btn-primary btn-sm fw-semibold" id="btnRefresh" title="Refresh Data">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
         </div>
-      </div>
 
-      <div class="card-body p-3">
-        <!-- TABULATOR TABLE CONTAINER -->
-        <div id="riwayatTable"></div>
-      </div>
+      </div><!-- /container-fluid -->
+    </div><!-- /app-content -->
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="app-footer">
+    <div class="float-end d-none d-sm-inline text-muted small">
+      Kasir Laporan Keuangan &copy; <?= date('Y') ?>
     </div>
+    <span class="text-muted small">
+      <strong>Kasir Apotek &amp; Pendaftaran</strong> – Sistem Laporan Keuangan Harian
+    </span>
+  </footer>
 
-  </div>
-</div>
+</div><!-- /app-wrapper -->
 
-<!-- MODAL KONFIRMASI HAPUS -->
+<!-- ============ MODAL HAPUS ============ -->
 <div class="modal fade" id="modalHapus" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content border-0 shadow">
@@ -247,8 +354,8 @@ declare(strict_types=1);
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+<!-- ============ TOAST ============ -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1100">
   <div id="appToast" class="toast align-items-center text-white bg-dark border-0" role="alert">
     <div class="d-flex">
       <div class="toast-body" id="toastMsg"></div>
@@ -257,8 +364,9 @@ declare(strict_types=1);
   </div>
 </div>
 
-<!-- JS Libraries: Bootstrap 5, SheetJS (for Excel Export), Tabulator JS -->
+<!-- JS Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
 
@@ -268,7 +376,6 @@ declare(strict_types=1);
 let table = null;
 let deleteTargetId = null;
 
-/** Format angka ke Rupiah */
 function formatNum(num) {
   const n = Math.round(Number(num) || 0);
   return n.toLocaleString('id-ID');
@@ -294,7 +401,7 @@ function showToast(msg, bgClass = 'bg-dark') {
   bsToast.show();
 }
 
-/** Hitung & Update KPI Cards dari data tabel */
+/** Hitung & Update KPI Small-Box dari data tabel */
 function updateKPI(data) {
   let totJmZainuddin = 0;
   let totJmAli       = 0;
@@ -320,85 +427,49 @@ function updateKPI(data) {
   document.getElementById('statParkir').textContent       = fmt(totParkir);
 }
 
-/** Custom filter function untuk Tabulator berdasarkan tanggal mulai & selesai */
 function customDateFilter(data) {
   const startDate = document.getElementById('filterStartDate').value;
   const endDate   = document.getElementById('filterEndDate').value;
-  const rowDate   = data.tanggal; // format: YYYY-MM-DD
-
+  const rowDate   = data.tanggal;
   if (!rowDate) return false;
   if (startDate && rowDate < startDate) return false;
-  if (endDate && rowDate > endDate) return false;
+  if (endDate   && rowDate > endDate)   return false;
   return true;
 }
 
-/** Terapkan filter tanggal & update KPI cards */
 function applyFilter() {
   if (!table) return;
-
   const startDate  = document.getElementById('filterStartDate').value;
   const endDate    = document.getElementById('filterEndDate').value;
   const textSearch = document.getElementById('filterInput').value.trim();
-
-  // Reset filter terdahulu
   table.clearFilter();
-
-  // Filter teks pencarian jika ada
-  if (textSearch) {
-    table.addFilter('tanggal', 'like', textSearch);
-  }
-
-  // Filter rentang tanggal jika diset
-  if (startDate || endDate) {
-    table.addFilter(customDateFilter);
-  }
-
-  // Update KPI berdasarkan baris data yang lolos filter
-  setTimeout(() => {
-    const filteredData = table.getData("active");
-    updateKPI(filteredData);
-  }, 60);
+  if (textSearch) table.addFilter('tanggal', 'like', textSearch);
+  if (startDate || endDate) table.addFilter(customDateFilter);
+  setTimeout(() => { updateKPI(table.getData("active")); }, 60);
 }
 
-/** Handler Preset Tanggal Cepat */
 function applyPreset(preset) {
   const now = new Date();
   const pad = n => String(n).padStart(2, '0');
-  const fmtDate = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-
-  let start = '';
-  let end = '';
-
+  const fmtDate = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  let start = '', end = '';
   if (preset === 'today') {
     start = end = fmtDate(now);
   } else if (preset === 'yesterday') {
-    const y = new Date(now);
-    y.setDate(y.getDate() - 1);
-    start = end = fmtDate(y);
+    const y = new Date(now); y.setDate(y.getDate()-1); start = end = fmtDate(y);
   } else if (preset === 'this_month') {
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    start = fmtDate(firstDay);
-    end = fmtDate(now);
+    start = fmtDate(new Date(now.getFullYear(), now.getMonth(), 1)); end = fmtDate(now);
   } else if (preset === 'last_month') {
-    const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastDayLastMonth  = new Date(now.getFullYear(), now.getMonth(), 0);
-    start = fmtDate(firstDayLastMonth);
-    end   = fmtDate(lastDayLastMonth);
+    start = fmtDate(new Date(now.getFullYear(), now.getMonth()-1, 1));
+    end   = fmtDate(new Date(now.getFullYear(), now.getMonth(), 0));
   } else if (preset === 'this_year') {
-    const firstDayYear = new Date(now.getFullYear(), 0, 1);
-    start = fmtDate(firstDayYear);
-    end   = fmtDate(now);
-  } else if (preset === 'all') {
-    start = '';
-    end   = '';
+    start = fmtDate(new Date(now.getFullYear(), 0, 1)); end = fmtDate(now);
   }
-
   document.getElementById('filterStartDate').value = start;
   document.getElementById('filterEndDate').value   = end;
   applyFilter();
 }
 
-/** Inisialisasi Tabulator JS Table */
 function initTabulator() {
   table = new Tabulator('#riwayatTable', {
     ajaxURL: 'api/list.php?full=1',
@@ -417,112 +488,51 @@ function initTabulator() {
     movableColumns: true,
     placeholder: 'Belum ada data laporan tersimpan',
     columns: [
+      { title: 'No', formatter: 'rownum', width: 55, headerHozAlign: 'center', hozAlign: 'center', headerSort: false },
       {
-        title: 'No',
-        formatter: 'rownum',
-        width: 60,
-        headerHozAlign: 'center',
-        hozAlign: 'center',
-        headerSort: false
-      },
-      {
-        title: 'Tanggal Laporan',
-        field: 'tanggal',
-        width: 190,
-        headerHozAlign: 'left',
+        title: 'Tanggal Laporan', field: 'tanggal', width: 200, headerHozAlign: 'left',
         formatter: function(cell) {
           const val = cell.getValue();
           return `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date">
-                    <i class="bi bi-calendar3 me-1"></i> ${fmtTglIndo(val)}
+                    <i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(val)}
                   </span>`;
         }
       },
+      { title: 'Total Kas Awal',    field: 'tot_kas_awal',    headerHozAlign: 'right', hozAlign: 'right', formatter: cell => fmt(cell.getValue()) },
+      { title: 'Total Pemasukan',   field: 'tot_pemasukan',   headerHozAlign: 'right', hozAlign: 'right', formatter: cell => `<span class="fw-bold text-success">${fmt(cell.getValue())}</span>` },
+      { title: 'Total Pengeluaran', field: 'tot_pengeluaran', headerHozAlign: 'right', hozAlign: 'right', formatter: cell => `<span class="fw-bold text-danger">${fmt(cell.getValue())}</span>` },
+      { title: 'Saldo Apotek',      field: 'a_saldo',         headerHozAlign: 'right', hozAlign: 'right', formatter: cell => `<span class="fw-semibold text-secondary">${fmt(cell.getValue())}</span>` },
+      { title: 'Saldo Pendaftaran', field: 'p_saldo',         headerHozAlign: 'right', hozAlign: 'right', formatter: cell => `<span class="fw-semibold text-secondary">${fmt(cell.getValue())}</span>` },
       {
-        title: 'Total Kas Awal',
-        field: 'tot_kas_awal',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => fmt(cell.getValue())
-      },
-      {
-        title: 'Total Pemasukan',
-        field: 'tot_pemasukan',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => `<span class="fw-bold text-success">${fmt(cell.getValue())}</span>`
-      },
-      {
-        title: 'Total Pengeluaran',
-        field: 'tot_pengeluaran',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => `<span class="fw-bold text-danger">${fmt(cell.getValue())}</span>`
-      },
-      {
-        title: 'Saldo Apotek',
-        field: 'a_saldo',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => `<span class="fw-semibold text-secondary">${fmt(cell.getValue())}</span>`
-      },
-      {
-        title: 'Saldo Pendaftaran',
-        field: 'p_saldo',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => `<span class="fw-semibold text-secondary">${fmt(cell.getValue())}</span>`
-      },
-      {
-        title: 'Saldo Keseluruhan',
-        field: 'grand_saldo',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
+        title: 'Saldo Keseluruhan', field: 'grand_saldo', headerHozAlign: 'right', hozAlign: 'right',
         formatter: function(cell) {
           const val = cell.getValue();
-          const colorClass = val < 0 ? 'text-danger' : 'text-primary';
-          return `<span class="fw-bold fs-6 ${colorClass}">${fmt(val)}</span>`;
+          return `<span class="fw-bold fs-6 ${val < 0 ? 'text-danger' : 'text-primary'}">${fmt(val)}</span>`;
         }
       },
       {
-        title: 'Aksi',
-        field: 'id',
-        width: 140,
-        headerHozAlign: 'center',
-        hozAlign: 'center',
-        headerSort: false,
+        title: 'Aksi', field: 'id', width: 140, headerHozAlign: 'center', hozAlign: 'center', headerSort: false,
         formatter: function(cell) {
-          const rowData = cell.getRow().getData();
-          const tgl = rowData.tanggal;
-          const id = rowData.id;
-          return `
-            <div class="btn-group btn-group-sm">
-              <a href="laporan.php?tanggal=${tgl}" class="btn btn-outline-primary" title="Buka / Edit Laporan">
-                <i class="bi bi-pencil-square"></i> Buka
-              </a>
-              <button type="button" class="btn btn-outline-danger btn-del" data-id="${id}" data-tgl="${tgl}" title="Hapus Laporan">
-                <i class="bi bi-trash3"></i>
-              </button>
-            </div>
-          `;
+          const d = cell.getRow().getData();
+          return `<div class="btn-group btn-group-sm">
+            <a href="laporan.php?tanggal=${d.tanggal}" class="btn btn-outline-primary" title="Buka / Edit"><i class="bi bi-pencil-square"></i> Buka</a>
+            <button type="button" class="btn btn-outline-danger btn-del" data-id="${d.id}" data-tgl="${d.tanggal}" title="Hapus"><i class="bi bi-trash3"></i></button>
+          </div>`;
         }
       }
     ]
   });
 
-  // Tabulator event: saat data selesai difilter, update KPI cards
   table.on("dataFiltered", function(filters, rows) {
-    const activeData = rows.map(r => r.getData());
-    updateKPI(activeData);
+    updateKPI(rows.map(r => r.getData()));
   });
 
-  // Event listener hapus di dalam tabel
   document.getElementById('riwayatTable').addEventListener('click', function(e) {
     const btn = e.target.closest('.btn-del');
     if (btn) {
       deleteTargetId = btn.dataset.id;
       document.getElementById('delTanggalText').textContent = fmtTglIndo(btn.dataset.tgl);
-      const modal = new bootstrap.Modal(document.getElementById('modalHapus'));
-      modal.show();
+      new bootstrap.Modal(document.getElementById('modalHapus')).show();
     }
   });
 }
@@ -530,12 +540,8 @@ function initTabulator() {
 document.addEventListener('DOMContentLoaded', () => {
   initTabulator();
 
-  // Tombol Terapkan Filter Tanggal
-  document.getElementById('btnApplyDateFilter').addEventListener('click', function() {
-    applyFilter();
-  });
+  document.getElementById('btnApplyDateFilter').addEventListener('click', applyFilter);
 
-  // Tombol Reset Filter Tanggal
   document.getElementById('btnResetDateFilter').addEventListener('click', function() {
     document.getElementById('filterStartDate').value = '';
     document.getElementById('filterEndDate').value   = '';
@@ -545,48 +551,33 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Filter berhasil di-reset', 'bg-secondary');
   });
 
-  // Filter pencarian teks
-  document.getElementById('filterInput').addEventListener('keyup', function(e) {
-    applyFilter();
-  });
+  document.getElementById('filterInput').addEventListener('keyup', applyFilter);
 
-  // Quick Preset Dropdown Items
   document.querySelectorAll('.preset-date').forEach(item => {
     item.addEventListener('click', function(e) {
       e.preventDefault();
-      const preset = this.dataset.preset;
-      applyPreset(preset);
+      applyPreset(this.dataset.preset);
     });
   });
 
-  // Export CSV
   document.getElementById('btnExportCsv').addEventListener('click', function() {
     table.download('csv', `Riwayat_Laporan_${new Date().toISOString().split('T')[0]}.csv`);
   });
 
-  // Export XLSX
   document.getElementById('btnExportXlsx').addEventListener('click', function() {
     table.download('xlsx', `Riwayat_Laporan_${new Date().toISOString().split('T')[0]}.xlsx`, { sheetName: 'Riwayat Laporan' });
   });
 
-  // Refresh
   document.getElementById('btnRefresh').addEventListener('click', function() {
     table.setData('api/list.php?full=1');
     showToast('Data berhasil diperbarui', 'bg-info');
   });
 
-  // Confirm delete
   document.getElementById('btnConfirmDelete').addEventListener('click', async function() {
     if (!deleteTargetId) return;
-
     try {
-      const res = await fetch('api/delete.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: deleteTargetId })
-      });
+      const res  = await fetch('api/delete.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id: deleteTargetId}) });
       const json = await res.json();
-
       if (json.success) {
         showToast('✅ Laporan berhasil dihapus', 'bg-success');
         table.setData('api/list.php?full=1');
@@ -596,8 +587,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       showToast('❌ Gagal terhubung ke server', 'bg-danger');
     } finally {
-      const modalEl = document.getElementById('modalHapus');
-      const modal = bootstrap.Modal.getInstance(modalEl);
+      const modal = bootstrap.Modal.getInstance(document.getElementById('modalHapus'));
       if (modal) modal.hide();
     }
   });
