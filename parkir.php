@@ -1,5 +1,5 @@
 <?php
-// parkir.php – Halaman Detail Pendapatan Parkir | AdminLTE 4
+// parkir.php – Halaman Detail Pendapatan Parkir dengan Tabulator JS | AdminLTE 4
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
@@ -14,14 +14,16 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
+  <!-- Tabulator JS (Bootstrap 5 Theme) -->
+  <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_bootstrap5.min.css">
 
   <style>
     .brand-text { font-size: 1rem; font-weight: 700; }
 
-    /* ---- Tabel laporan ---- */
-    #tabelParkir th { background: #0d6efd; color: #fff; white-space: nowrap; }
-    #tabelParkir .tr-total td { font-weight: 800; background: #d1e7dd; color: #0a3622; border-top: 2px solid #0f5132; font-size: 1rem; }
-    #tabelParkir tbody tr:hover { background: #f0f4ff; }
+    /* ---- Tabulator Tweaks ---- */
+    #parkirTable { border-radius: 6px; overflow: hidden; font-size: .875rem; }
+    .tabulator .tabulator-header .tabulator-col { font-weight: 700; background-color: #f8f9fa; }
+    .tabulator-row .tabulator-cell { vertical-align: middle; }
     .badge-date { font-weight: 600; font-size: .85rem; }
 
     /* ---- Info cards ---- */
@@ -29,137 +31,102 @@ declare(strict_types=1);
     .stat-card.total-card   { border-color: #0d6efd; }
     .stat-card.count-card   { border-color: #198754; }
 
-    /* ---- Baris Gaji Upik ---- */
-    #tabelParkir .tr-gaji td {
-      border-top: 1.5px dashed #198754 !important;
-      color: #198754;
-      font-weight: 700;
-      background: rgba(25,135,84,.04);
-    }
+    /* Print table disembunyikan saat tampil di layar */
+    .print-only-table { display: none; }
+    .print-header { display: none; }
 
-    /* Span tanggal khusus cetak: disembunyikan di layar */
-    .print-date { display: none; }
+    /* ===================================================
+       PRINT STYLES — fix AdminLTE 4 layout & Tabulator
+       =================================================== */
+    @media print {
+      @page { margin: 15mm; size: A4 portrait; }
 
-      /* ===================================================
-         PRINT STYLES — fix AdminLTE 4 layout
-         =================================================== */
-      @media print {
-        @page { margin: 15mm; size: A4 portrait; }
+      /* --- Sembunyikan elemen UI & Tabulator screen table --- */
+      .app-header,
+      .app-sidebar,
+      .app-footer,
+      .no-print,
+      .filter-area,
+      .stat-cards,
+      .card-tools,
+      .breadcrumb,
+      .app-content-header,
+      .tabulator,
+      #parkirTable { display: none !important; }
 
-        /* --- Sembunyikan elemen UI --- */
-        .app-header,
-        .app-sidebar,
-        .app-footer,
-        .no-print,
-        .filter-area,
-        .stat-cards,
-        .card-tools,
-        .breadcrumb,
-        .app-content-header { display: none !important; }
-
-        /* --- Reset AdminLTE layout agar tidak ada margin sidebar --- */
-        html, body {
-          background: #fff !important;
-          font-family: Arial, sans-serif !important;
-          font-size: 9pt !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          width: 100% !important;
-        }
-        .app-wrapper,
-        .app-main,
-        .app-content {
-          display: block !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          width: 100% !important;
-          min-height: auto !important;
-        }
-        .container-fluid {
-          padding: 0 !important;
-          max-width: 100% !important;
-        }
-
-        /* --- Card --- */
-        .card { box-shadow: none !important; border: none !important; margin: 0 !important; }
-        .card-header { background: #fff !important; border-bottom: 1.5px solid #333 !important; padding: 6px 0 !important; }
-        .card-body { padding: 0 !important; }
-        .table-responsive { overflow: visible !important; }
-
-        /* --- Tampilkan print header --- */
-        .print-header { display: block !important; }
-
-        /* =====================================================
-           FIX: Paksa semua teks jadi hitam — tidak bergantung
-           pada "Background Graphics" di dialog print browser.
-           Gunakan border tebal sebagai pengganti warna background.
-           ===================================================== */
-        * {
-          color: #000 !important;
-          background: transparent !important;
-          -webkit-print-color-adjust: economy;
-          print-color-adjust: economy;
-        }
-
-        /* --- Tabel --- */
-        #tabelParkir {
-          width: 100% !important;
-          border-collapse: collapse !important;
-          font-size: 9pt !important;
-        }
-        #tabelParkir th,
-        #tabelParkir td {
-          border: 1px solid #999 !important;
-          padding: 5px 8px !important;
-          background: transparent !important;
-          color: #000 !important;
-        }
-        /* Header: border bawah tebal + huruf kapital, bukan background gelap */
-        #tabelParkir thead tr {
-          border-bottom: 2.5px solid #000 !important;
-        }
-        #tabelParkir th {
-          font-weight: 800 !important;
-          border-bottom: 2.5px solid #000 !important;
-          text-transform: uppercase;
-          letter-spacing: .04em;
-        }
-        /* Baris Total: border atas tebal, bukan background hijau */
-        #tabelParkir .tr-total td {
-          border-top: 2.5px solid #000 !important;
-          font-weight: 800 !important;
-          font-size: 10pt !important;
-        }
-        /* Badge tanggal: tampil sebagai teks biasa */
-        .badge-date {
-          border: none !important;
-          padding: 0 !important;
-          font-size: 9pt !important;
-        }
-        /* Baris Gaji Upik: border atas putus-putus, teks bold */
-        #tabelParkir .tr-gaji td {
-          border-top: 1.5px dashed #555 !important;
-          font-weight: 700 !important;
-        }
-        /* Tampilkan keterangan (60% × Total) saat print */
-        .print-only { display: inline !important; }
-        /* Sembunyikan hanya badge non-tanggal (misal badge "60%"),
-           jangan sembunyikan .badge-date yang membungkus kolom tanggal */
-        .badge:not(.badge-date) { display: none !important; }
-        /* Badge tanggal: sembunyikan saat print,
-           gantikan oleh .print-date yang lebih bersih */
-        .badge-date { display: none !important; }
-        /* Tampilkan tanggal versi cetak (tanpa hari & ikon) */
-        .print-date {
-          display: inline !important;
-          font-size: 9pt !important;
-          font-weight: 600 !important;
-          color: #000 !important;
-        }
+      /* --- Reset AdminLTE layout agar tidak ada margin sidebar --- */
+      html, body {
+        background: #fff !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 9pt !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+      .app-wrapper,
+      .app-main,
+      .app-content {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+      }
+      .container-fluid {
+        padding: 0 !important;
+        max-width: 100% !important;
       }
 
-    /* Print header hidden on screen */
-    .print-header { display: none; }
+      /* --- Card --- */
+      .card { box-shadow: none !important; border: none !important; margin: 0 !important; }
+      .card-header { background: #fff !important; border-bottom: 1.5px solid #333 !important; padding: 6px 0 !important; }
+      .card-body { padding: 0 !important; }
+
+      /* --- Tampilkan print header & print table --- */
+      .print-header { display: block !important; text-align: center; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 14px; }
+      .print-header h2 { font-size: 14pt; font-weight: 800; text-transform: uppercase; margin: 0; }
+      .print-header p  { font-size: 9pt; color: #555; margin: 2px 0 0; }
+
+      .print-only-table {
+        display: table !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 9pt !important;
+      }
+
+      * {
+        color: #000 !important;
+        background: transparent !important;
+        -webkit-print-color-adjust: economy;
+        print-color-adjust: economy;
+      }
+
+      #tabelParkirPrint th,
+      #tabelParkirPrint td {
+        border: 1px solid #999 !important;
+        padding: 5px 8px !important;
+        background: transparent !important;
+        color: #000 !important;
+      }
+      #tabelParkirPrint thead tr {
+        border-bottom: 2.5px solid #000 !important;
+      }
+      #tabelParkirPrint th {
+        font-weight: 800 !important;
+        border-bottom: 2.5px solid #000 !important;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+      }
+      #tabelParkirPrint .tr-total td {
+        border-top: 2.5px solid #000 !important;
+        font-weight: 800 !important;
+        font-size: 10pt !important;
+      }
+      #tabelParkirPrint .tr-gaji td {
+        border-top: 1.5px dashed #555 !important;
+        font-weight: 700 !important;
+      }
+    }
   </style>
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -359,7 +326,7 @@ declare(strict_types=1);
             </h5>
             <span class="badge bg-secondary no-print" id="badgePeriode">Semua Data</span>
           </div>
-          <div class="card-body p-0">
+          <div class="card-body p-3">
 
             <!-- Print header (hanya tampil saat print) -->
             <div class="print-header px-4 pt-3">
@@ -368,26 +335,33 @@ declare(strict_types=1);
               <p>Dicetak: <?= date('d/m/Y H:i') ?></p>
             </div>
 
-            <!-- Tabel -->
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover align-middle mb-0" id="tabelParkir">
-                <thead>
-                  <tr class="text-center">
-                    <th style="width:60px">No</th>
-                    <th class="text-start">Tanggal</th>
-                    <th class="text-end" style="width:220px">Pendapatan Parkir</th>
-                  </tr>
-                </thead>
-                <tbody id="tbodyParkir">
-                  <tr>
-                    <td colspan="3" class="text-center text-muted py-5">
-                      <i class="fas fa-spinner fa-spin me-2"></i>Memuat data...
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot id="tfootParkir"></tfoot>
-              </table>
+            <!-- Tabulator Table Container (Screen) -->
+            <div id="parkirTable" class="no-print"></div>
+
+            <!-- Ringkasan Total & Gaji Upik (Screen) -->
+            <div class="mt-3 p-3 bg-light rounded border d-flex flex-wrap justify-content-between align-items-center no-print">
+              <div>
+                <span class="fw-bold text-dark me-3">
+                  <i class="bi bi-sigma me-1"></i>JUMLAH TOTAL: <span class="text-primary fs-5" id="sumTotalText">Rp 0</span>
+                </span>
+                <span class="fw-semibold text-success ms-sm-3">
+                  <i class="bi bi-person-fill me-1"></i>Gaji Upik (60%): <span class="fs-5" id="gajiUpikText">Rp 0</span>
+                </span>
+              </div>
             </div>
+
+            <!-- Printable HTML Table (Hanya tampil saat Cetak PDF) -->
+            <table class="table table-bordered align-middle mb-0 print-only-table" id="tabelParkirPrint">
+              <thead>
+                <tr class="text-center">
+                  <th style="width:60px">No</th>
+                  <th class="text-start">Tanggal</th>
+                  <th class="text-end" style="width:220px">Pendapatan Parkir</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyParkirPrint"></tbody>
+              <tfoot id="tfootParkirPrint"></tfoot>
+            </table>
 
           </div>
         </div>
@@ -420,9 +394,12 @@ declare(strict_types=1);
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
+<script src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
 
 <script>
 'use strict';
+
+let tabulatorTable = null;
 
 // ---------------------------------------------------------------
 // UTILS
@@ -459,15 +436,51 @@ function showToast(msg, bgClass = 'bg-dark') {
 }
 
 // ---------------------------------------------------------------
+// INIT TABULATOR
+// ---------------------------------------------------------------
+function initTabulator() {
+  tabulatorTable = new Tabulator('#parkirTable', {
+    data: [],
+    layout: 'fitColumns',
+    responsiveLayout: 'collapse',
+    pagination: 'local',
+    paginationSize: 15,
+    paginationSizeSelector: [10, 15, 30, 50, 100],
+    movableColumns: true,
+    placeholder: 'Tidak ada data pendapatan parkir',
+    columns: [
+      { title: 'No', formatter: 'rownum', width: 65, headerHozAlign: 'center', hozAlign: 'center', headerSort: false },
+      {
+        title: 'Tanggal Laporan',
+        field: 'tanggal',
+        headerHozAlign: 'left',
+        formatter: function(cell) {
+          const val = cell.getValue();
+          return `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date">
+                    <i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(val)}
+                  </span>`;
+        }
+      },
+      {
+        title: 'Pendapatan Parkir',
+        field: 'parkir',
+        headerHozAlign: 'right',
+        hozAlign: 'right',
+        formatter: cell => `<span class="fw-bold text-success">${fmt(cell.getValue())}</span>`
+      }
+    ]
+  });
+}
+
+// ---------------------------------------------------------------
 // LOAD DATA
 // ---------------------------------------------------------------
 async function loadData(start = '', end = '') {
-  const tbody  = document.getElementById('tbodyParkir');
-  const tfoot  = document.getElementById('tfootParkir');
+  const tbodyPrint = document.getElementById('tbodyParkirPrint');
+  const tfootPrint = document.getElementById('tfootParkirPrint');
 
-  tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">
-    <i class="fas fa-spinner fa-spin me-2"></i>Memuat data...</td></tr>`;
-  tfoot.innerHTML = '';
+  tbodyPrint.innerHTML = '';
+  tfootPrint.innerHTML = '';
 
   try {
     let url = 'api/parkir.php';
@@ -485,11 +498,14 @@ async function loadData(start = '', end = '') {
     const total = json.total || 0;
     const count = json.count || 0;
     const avg   = count > 0 ? total / count : 0;
+    const gajiUpik = Math.round(total * 0.60);
 
-    // Update stat cards
-    document.getElementById('statTotal').textContent = fmt(total);
-    document.getElementById('statCount').textContent = count + ' Hari';
-    document.getElementById('statAvg').textContent   = fmt(avg);
+    // Update stat cards & summary elements
+    document.getElementById('statTotal').textContent   = fmt(total);
+    document.getElementById('statCount').textContent   = count + ' Hari';
+    document.getElementById('statAvg').textContent     = fmt(avg);
+    document.getElementById('sumTotalText').textContent = fmt(total);
+    document.getElementById('gajiUpikText').textContent = fmt(gajiUpik);
 
     // Update badge & print periode
     let periodeText = 'Semua Data';
@@ -497,51 +513,40 @@ async function loadData(start = '', end = '') {
     else if (start)     periodeText = 'Mulai ' + start;
     else if (end)       periodeText = 'Sampai ' + end;
 
-    document.getElementById('badgePeriode').textContent  = periodeText;
-    document.getElementById('printPeriode').textContent  = 'Periode: ' + periodeText;
+    document.getElementById('badgePeriode').textContent = periodeText;
+    document.getElementById('printPeriode').textContent = 'Periode: ' + periodeText;
 
-    // Render tabel
+    // Load data into Tabulator Table
+    if (tabulatorTable) {
+      tabulatorTable.setData(rows);
+    }
+
+    // Render print table HTML
     if (rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-5">
-        <i class="bi bi-inbox fs-2 d-block mb-2"></i>Tidak ada data pendapatan parkir</td></tr>`;
+      tbodyPrint.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">Tidak ada data pendapatan parkir</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = rows.map((row, idx) => `
+    tbodyPrint.innerHTML = rows.map((row, idx) => `
       <tr>
         <td class="text-center fw-semibold text-muted">${idx + 1}</td>
-        <td>
-          <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date">
-            <i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(row.tanggal)}
-          </span>
-          <span class="print-date">${fmtTglPrint(row.tanggal)}</span>
-        </td>
+        <td>${fmtTglPrint(row.tanggal)}</td>
         <td class="text-end fw-bold text-success">${fmt(row.parkir)}</td>
       </tr>
     `).join('');
 
-    // Total & Gaji Upik row
-    const gajiUpik = Math.round(total * 0.60);
-    tfoot.innerHTML = `
+    tfootPrint.innerHTML = `
       <tr class="tr-total">
-        <td colspan="2" class="text-end fw-bold ps-3">
-          <i class="bi bi-sigma me-1"></i>JUMLAH TOTAL (${count} hari)
-        </td>
+        <td colspan="2" class="text-end fw-bold ps-3">JUMLAH TOTAL (${count} hari)</td>
         <td class="text-end fw-bold fs-5">${fmt(total)}</td>
       </tr>
       <tr class="tr-gaji">
-        <td colspan="2" class="text-end fw-semibold ps-3 text-success">
-          <i class="bi bi-person-fill me-1"></i>Gaji Upik
-          <span class="badge bg-success-subtle text-success border border-success ms-1 no-print" style="font-size:.7rem">60%</span>
-          <span class="print-only" style="display:none;font-size:8pt;color:#555"> (60% × Total)</span>
-        </td>
+        <td colspan="2" class="text-end fw-semibold ps-3 text-success">Gaji Upik (60% × Total)</td>
         <td class="text-end fw-bold fs-5 text-success">${fmt(gajiUpik)}</td>
       </tr>
     `;
 
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-4">
-      <i class="bi bi-exclamation-triangle me-2"></i>${err.message}</td></tr>`;
     showToast('❌ Gagal memuat data: ' + err.message, 'bg-danger');
   }
 }
@@ -565,7 +570,6 @@ function applyPreset(preset) {
     start = fd(new Date(now.getFullYear(), 0, 1));
     end   = fd(now);
   }
-  // 'all' → start & end kosong
 
   document.getElementById('filterStart').value = start;
   document.getElementById('filterEnd').value   = end;
@@ -576,17 +580,15 @@ function applyPreset(preset) {
 // EVENT LISTENERS
 // ---------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
-  // Load awal tanpa filter
+  initTabulator();
   loadData();
 
-  // Terapkan filter
   document.getElementById('btnFilter').addEventListener('click', () => {
     const start = document.getElementById('filterStart').value;
     const end   = document.getElementById('filterEnd').value;
     loadData(start, end);
   });
 
-  // Reset filter
   document.getElementById('btnReset').addEventListener('click', () => {
     document.getElementById('filterStart').value = '';
     document.getElementById('filterEnd').value   = '';
@@ -594,7 +596,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Filter berhasil di-reset', 'bg-secondary');
   });
 
-  // Preset
   document.querySelectorAll('.preset').forEach(el => {
     el.addEventListener('click', function(e) {
       e.preventDefault();
@@ -602,7 +603,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Cetak PDF
   document.getElementById('btnCetak').addEventListener('click', () => {
     window.print();
   });
