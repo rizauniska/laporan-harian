@@ -37,6 +37,9 @@ declare(strict_types=1);
       background: rgba(25,135,84,.04);
     }
 
+    /* Span tanggal khusus cetak: disembunyikan di layar */
+    .print-date { display: none; }
+
       /* ===================================================
          PRINT STYLES — fix AdminLTE 4 layout
          =================================================== */
@@ -143,12 +146,15 @@ declare(strict_types=1);
         /* Sembunyikan hanya badge non-tanggal (misal badge "60%"),
            jangan sembunyikan .badge-date yang membungkus kolom tanggal */
         .badge:not(.badge-date) { display: none !important; }
-        /* Pastikan badge-date tetap tampil sebagai teks biasa */
-        .badge-date {
+        /* Badge tanggal: sembunyikan saat print,
+           gantikan oleh .print-date yang lebih bersih */
+        .badge-date { display: none !important; }
+        /* Tampilkan tanggal versi cetak (tanpa hari & ikon) */
+        .print-date {
           display: inline !important;
-          border: none !important;
-          padding: 0 !important;
           font-size: 9pt !important;
+          font-weight: 600 !important;
+          color: #000 !important;
         }
       }
 
@@ -435,6 +441,16 @@ function fmtTglIndo(dateStr) {
   } catch (_) { return dateStr; }
 }
 
+/** Format tanggal untuk cetak: tanpa hari, tanpa ikon (misal: 27 Juli 2026) */
+function fmtTglPrint(dateStr) {
+  if (!dateStr) return '-';
+  try {
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString('id-ID', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+  } catch (_) { return dateStr; }
+}
+
 function showToast(msg, bgClass = 'bg-dark') {
   const toastEl = document.getElementById('appToast');
   toastEl.className = `toast align-items-center text-white ${bgClass} border-0`;
@@ -498,6 +514,7 @@ async function loadData(start = '', end = '') {
           <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date">
             <i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(row.tanggal)}
           </span>
+          <span class="print-date">${fmtTglPrint(row.tanggal)}</span>
         </td>
         <td class="text-end fw-bold text-success">${fmt(row.parkir)}</td>
       </tr>
