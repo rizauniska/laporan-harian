@@ -967,7 +967,7 @@ function fmtTglIndo(dateStr) {
   if (!dateStr) return '-';
   try {
     return new Date(dateStr + 'T00:00:00').toLocaleDateString('id-ID', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      day: 'numeric', month: 'long', year: 'numeric'
     });
   } catch (_) { return dateStr; }
 }
@@ -1033,7 +1033,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnCetak').addEventListener('click', () => {
     buildRekap();
     buildPrintView();
+    document.body.classList.add('printing-laporan');
     window.print();
+    setTimeout(() => document.body.classList.remove('printing-laporan'), 1000);
   });
 
   document.getElementById('btnExcel').addEventListener('click', () => {
