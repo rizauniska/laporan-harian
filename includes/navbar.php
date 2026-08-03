@@ -2,6 +2,7 @@
 // includes/navbar.php – Reusable Top Navbar Component
 declare(strict_types=1);
 $currentPage = basename($_SERVER['PHP_SELF']);
+require_once __DIR__ . '/print-style.php';
 ?>
 <nav class="app-header navbar navbar-expand bg-white shadow-sm border-bottom">
   <div class="container-fluid">
