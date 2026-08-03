@@ -96,6 +96,13 @@ declare(strict_types=1);
               <p>Input / Edit Laporan</p>
             </a>
           </li>
+          <li class="nav-header">LAPORAN DETAIL</li>
+          <li class="nav-item">
+            <a href="parkir.php" class="nav-link">
+              <i class="nav-icon fas fa-parking"></i>
+              <p>Pendapatan Parkir</p>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -219,8 +226,8 @@ declare(strict_types=1);
               <div class="small-box-icon">
                 <i class="fas fa-parking"></i>
               </div>
-              <a href="laporan.php" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-100-hover">
-                Detail <i class="bi bi-arrow-right-circle ms-1"></i>
+              <a href="parkir.php" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-100-hover">
+                Lihat Detail <i class="bi bi-arrow-right-circle ms-1"></i>
               </a>
             </div>
           </div>
