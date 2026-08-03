@@ -15,45 +15,8 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
   <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_bootstrap5.min.css">
-
-  <style>
-    .brand-text { font-size: 1rem; font-weight: 700; }
-    #labTable { border-radius: 6px; overflow: hidden; font-size: .875rem; }
-    .tabulator .tabulator-header .tabulator-col { font-weight: 700; background-color: #f8f9fa; }
-    .tabulator-row .tabulator-cell { vertical-align: middle; }
-    .badge-date { font-weight: 600; font-size: .85rem; }
-
-    .stat-card { border-left: 4px solid; border-radius: 6px; }
-    .stat-card.total-card { border-color: #ffc107; }
-    .stat-card.item-card  { border-color: #0d6efd; }
-    .stat-card.avg-card   { border-color: #198754; }
-
-    .print-only-table { display: none; }
-    .print-header { display: none; }
-
-    @media print {
-      @page { margin: 15mm; size: A4 portrait; }
-      .app-header, .app-sidebar, .app-footer, .no-print, .filter-area, .stat-cards, .card-tools, .breadcrumb, .app-content-header, .tabulator, #labTable { display: none !important; }
-
-      html, body { background: #fff !important; font-family: Arial, sans-serif !important; font-size: 9pt !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
-      .app-wrapper, .app-main, .app-content { display: block !important; margin: 0 !important; padding: 0 !important; width: 100% !important; min-height: auto !important; }
-      .container-fluid { padding: 0 !important; max-width: 100% !important; }
-      .card { box-shadow: none !important; border: none !important; margin: 0 !important; }
-      .card-header { background: #fff !important; border-bottom: 1.5px solid #333 !important; padding: 6px 0 !important; }
-      .card-body { padding: 0 !important; }
-
-      .print-header { display: block !important; text-align: center; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 14px; }
-      .print-header h2 { font-size: 14pt; font-weight: 800; text-transform: uppercase; margin: 0; }
-      .print-header p  { font-size: 9pt; color: #555; margin: 2px 0 0; }
-
-      .print-only-table { display: table !important; width: 100% !important; border-collapse: collapse !important; font-size: 9pt !important; }
-      * { color: #000 !important; background: transparent !important; -webkit-print-color-adjust: economy; print-color-adjust: economy; }
-      #tabelPrint th, #tabelPrint td { border: 1px solid #999 !important; padding: 5px 8px !important; background: transparent !important; color: #000 !important; }
-      #tabelPrint thead tr { border-bottom: 2.5px solid #000 !important; }
-      #tabelPrint th { font-weight: 800 !important; border-bottom: 2.5px solid #000 !important; text-transform: uppercase; letter-spacing: .04em; }
-      #tabelPrint .tr-total td { border-top: 2.5px solid #000 !important; font-weight: 800 !important; font-size: 10pt !important; }
-    }
-  </style>
+  <!-- Custom Main CSS -->
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 <div class="app-wrapper">
@@ -173,7 +136,7 @@ declare(strict_types=1);
           <div class="col-md-4 col-sm-6">
             <div class="card shadow-sm stat-card total-card p-3">
               <div class="d-flex align-items-center gap-3">
-                <div style="width:48px;height:48px;border-radius:10px;background:rgba(255,193,7,.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#ffc107">
+                <div class="stat-icon-wrapper stat-icon-yellow">
                   <i class="fas fa-flask"></i>
                 </div>
                 <div>
@@ -186,7 +149,7 @@ declare(strict_types=1);
           <div class="col-md-4 col-sm-6">
             <div class="card shadow-sm stat-card item-card p-3">
               <div class="d-flex align-items-center gap-3">
-                <div style="width:48px;height:48px;border-radius:10px;background:rgba(13,110,253,.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#0d6efd">
+                <div class="stat-icon-wrapper stat-icon-blue">
                   <i class="bi bi-list-check"></i>
                 </div>
                 <div>
@@ -199,7 +162,7 @@ declare(strict_types=1);
           <div class="col-md-4 col-sm-6">
             <div class="card shadow-sm stat-card avg-card p-3">
               <div class="d-flex align-items-center gap-3">
-                <div style="width:48px;height:48px;border-radius:10px;background:rgba(25,135,84,.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#198754">
+                <div class="stat-icon-wrapper stat-icon-green">
                   <i class="bi bi-graph-up"></i>
                 </div>
                 <div>

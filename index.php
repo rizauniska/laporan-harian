@@ -19,26 +19,8 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
   <!-- Tabulator (Bootstrap 5 theme) -->
   <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_bootstrap5.min.css">
-
-  <style>
-    /* ---- Sidebar brand ---- */
-    .brand-text { font-size: 1rem; font-weight: 700; letter-spacing: .02em; }
-
-    /* ---- Small-box KPI tweaks ---- */
-    .small-box { border-radius: 10px; overflow: hidden; }
-    .small-box .inner h4 { font-size: 1.2rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .small-box .inner p  { font-size: .8rem; font-weight: 600; opacity: .9; margin-bottom: 0; }
-    .small-box-icon { font-size: 3rem; opacity: .25; }
-
-    /* ---- Tabulator tweaks ---- */
-    #riwayatTable { border-radius: 6px; overflow: hidden; font-size: .875rem; }
-    .tabulator .tabulator-header .tabulator-col { font-weight: 700; }
-    .tabulator-row .tabulator-cell { vertical-align: middle; }
-    .badge-date { font-weight: 600; font-size: .82rem; }
-
-    /* ---- Filter card ---- */
-    .filter-card .card-header { background: #fff; border-bottom: 2px solid #dee2e6; }
-  </style>
+  <!-- Custom Main CSS -->
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 <div class="app-wrapper">
@@ -154,7 +136,7 @@ declare(strict_types=1);
 
           <!-- JM dr. Ali -->
           <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
-            <div class="small-box text-bg-purple" style="background:#6c63ff!important">
+            <div class="small-box bg-smallbox-ali">
               <div class="inner">
                 <h4 id="statJmAli">Rp 0</h4>
                 <p>JM dr. Ali (Program + non Program)</p>
@@ -202,7 +184,7 @@ declare(strict_types=1);
 
           <!-- Pasien Fisio 90rb -->
           <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
-            <div class="small-box" style="background:#0f766e!important;color:#fff">
+            <div class="small-box bg-smallbox-fisio90">
               <div class="inner">
                 <h4 id="statFisio90Count">0 Pasien</h4>
                 <p>Pasien Fisioterapi Rp 90.000</p>
