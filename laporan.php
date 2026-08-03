@@ -833,7 +833,7 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
 
                     <!-- Ringkasan Gabungan -->
                     <div class="card mt-3 shadow-none border">
-                      <div class="card-header bg-light fw-bold text-dark py-2 small">
+                      <div class="card-header bg-white fw-bold text-dark py-2 small">
                         <i class="bi bi-calculator me-1"></i> Total Gabungan Kedua Kasir
                       </div>
                       <div class="card-body p-0">
