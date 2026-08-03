@@ -29,32 +29,100 @@ declare(strict_types=1);
     .stat-card.total-card   { border-color: #0d6efd; }
     .stat-card.count-card   { border-color: #198754; }
 
-    /* ===================================================
-       PRINT STYLES
-       =================================================== */
-    @media print {
-      @page { margin: 15mm; size: A4 portrait; }
-      .app-header, .app-sidebar, .app-footer,
-      .no-print, .btn, .card-tools { display: none !important; }
-      .app-main { margin-left: 0 !important; padding: 0 !important; }
-      .app-content-header, .app-content { padding: 0 !important; margin: 0 !important; }
-      body { background: #fff !important; font-family: Arial, sans-serif; font-size: 9pt; }
+      /* ===================================================
+         PRINT STYLES — fix AdminLTE 4 layout
+         =================================================== */
+      @media print {
+        @page { margin: 15mm; size: A4 portrait; }
 
-      /* Print header */
-      .print-header { display: block !important; text-align: center; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 14px; }
-      .print-header h2 { font-size: 14pt; font-weight: 800; text-transform: uppercase; margin: 0; }
-      .print-header p  { font-size: 9pt; color: #555; margin: 2px 0 0; }
+        /* --- Sembunyikan elemen UI --- */
+        .app-header,
+        .app-sidebar,
+        .app-footer,
+        .no-print,
+        .filter-area,
+        .stat-cards,
+        .card-tools,
+        .breadcrumb,
+        .app-content-header { display: none !important; }
 
-      /* Table print */
-      #tabelParkir { width: 100%; border-collapse: collapse; font-size: 9pt; }
-      #tabelParkir th, #tabelParkir td { border: 1px solid #bbb; padding: 4px 8px; }
-      #tabelParkir th { background: #1a1a2e !important; color: #fff !important; -webkit-print-color-adjust: exact; }
-      #tabelParkir .tr-total td { background: #d1e7dd !important; -webkit-print-color-adjust: exact; }
+        /* --- Reset AdminLTE layout agar tidak ada margin sidebar --- */
+        html, body {
+          background: #fff !important;
+          font-family: Arial, sans-serif !important;
+          font-size: 9pt !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+        }
+        /* AdminLTE 4 menambahkan margin-left pada .app-main untuk sidebar,
+           reset agar konten muncul dari pinggir kiri */
+        .app-wrapper,
+        .app-main,
+        .app-content {
+          display: block !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+          min-height: auto !important;
+        }
+        .container-fluid {
+          padding: 0 !important;
+          max-width: 100% !important;
+        }
 
-      /* Hide filter area in print */
-      .filter-area { display: none !important; }
-      .stat-cards  { display: none !important; }
-    }
+        /* --- Card: hilangkan shadow/border berlebih --- */
+        .card {
+          box-shadow: none !important;
+          border: none !important;
+          margin: 0 !important;
+        }
+        .card-header {
+          background: #fff !important;
+          border-bottom: 1.5px solid #333 !important;
+          padding: 6px 0 !important;
+          color: #000 !important;
+        }
+        .card-header .card-title { color: #000 !important; }
+        .card-body { padding: 0 !important; }
+        .table-responsive { overflow: visible !important; }
+
+        /* --- Tampilkan print header --- */
+        .print-header { display: block !important; }
+
+        /* --- Tabel --- */
+        #tabelParkir {
+          width: 100% !important;
+          border-collapse: collapse !important;
+          font-size: 9pt !important;
+        }
+        #tabelParkir th,
+        #tabelParkir td {
+          border: 1px solid #bbb !important;
+          padding: 5px 8px !important;
+        }
+        #tabelParkir th {
+          background: #1a1a2e !important;
+          color: #fff !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        #tabelParkir .tr-total td {
+          background: #d1e7dd !important;
+          font-weight: 800 !important;
+          font-size: 10pt !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .badge-date {
+          background: none !important;
+          border: none !important;
+          color: #000 !important;
+          font-size: 9pt !important;
+          padding: 0 !important;
+        }
+        .badge-date i { display: none !important; }
+      }
 
     /* Print header hidden on screen */
     .print-header { display: none; }
