@@ -184,6 +184,8 @@ declare(strict_types=1);
     <div class="d-flex"><div class="toast-body" id="toastMsg"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
   </div>
 </div>
+<!-- PRINT VIEW (Hanya aktif saat cetak PDF) -->
+<div id="print-view"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
@@ -193,7 +195,7 @@ declare(strict_types=1);
 'use strict';
 let tabulatorTable = null;
 
-function fmt(num) { return 'Rp\u00A0' + Math.round(Number(num) || 0).toLocaleString('id-ID'); }
+function fmt(num) { const n = Math.round(Number(num) || 0); return 'Rp\u00A0' + n.toLocaleString('id-ID'); }
 function fmtTglIndo(d) { try { return new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); } catch(_) { return d; } }
 function fmtTglPrint(d) { try { return new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }); } catch(_) { return d; } }
 function showToast(msg, bg = 'bg-dark') { const t = document.getElementById('appToast'); t.className = `toast align-items-center text-white ${bg} border-0`; document.getElementById('toastMsg').textContent = msg; new bootstrap.Toast(t).show(); }
@@ -202,26 +204,13 @@ function initTabulator() {
   tabulatorTable = new Tabulator('#fisio90Table', {
     data: [],
     layout: 'fitColumns',
-    responsiveLayout: 'collapse',
     pagination: 'local',
     paginationSize: 15,
-    paginationSizeSelector: [10, 15, 30, 50, 100],
-    movableColumns: true,
-    placeholder: 'Tidak ada data Pasien Fisio 90rb',
     columns: [
-      { title: 'No', formatter: 'rownum', width: 65, headerHozAlign: 'center', hozAlign: 'center', headerSort: false },
-      {
-        title: 'Tanggal Laporan', field: 'tanggal', headerHozAlign: 'left',
-        formatter: cell => `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(cell.getValue())}</span>`
-      },
-      {
-        title: 'Jumlah Pasien', field: 'fisio_90_pasien', headerHozAlign: 'center', hozAlign: 'center', width: 150,
-        formatter: cell => `<span class="fw-bold text-dark">${cell.getValue()} Orang</span>`
-      },
-      {
-        title: 'Total Nominal', field: 'total_nominal', headerHozAlign: 'right', hozAlign: 'right',
-        formatter: cell => `<span class="fw-bold text-success">${fmt(cell.getValue())}</span>`
-      }
+      { title: 'No', formatter: 'rownum', width: 65, hozAlign: 'center' },
+      { title: 'Tanggal Laporan', field: 'tanggal', formatter: cell => `<span class="badge bg-primary bg-opacity-10 text-primary">${fmtTglIndo(cell.getValue())}</span>` },
+      { title: 'Jumlah Pasien', field: 'fisio_90_pasien', hozAlign: 'center', formatter: cell => `${cell.getValue()} Orang` },
+      { title: 'Total Nominal', field: 'total_nominal', hozAlign: 'right', formatter: cell => `<span class="fw-bold text-success">${fmt(cell.getValue())}</span>` }
     ]
   });
 }
@@ -242,52 +231,40 @@ async function loadData(start = '', end = '') {
     const json = await res.json();
     if (!json.success) throw new Error(json.error || 'Error');
 
-    const rows      = json.data || [];
+    const rows = json.data || [];
     const totPasien = json.total_pasien || 0;
-    const total     = json.total || 0;
-    const count     = json.count || 0;
-    const avgPasien = count > 0 ? (totPasien / count).toFixed(1) : 0;
+    const total = json.total || 0;
+    const count = json.count || 0;
 
-    document.getElementById('statPasien').textContent     = totPasien + ' Pasien';
-    document.getElementById('statTotal').textContent      = fmt(total);
-    document.getElementById('statAvg').textContent        = avgPasien + ' Pasien';
+    document.getElementById('statPasien').textContent = totPasien + ' Pasien';
+    document.getElementById('statTotal').textContent  = fmt(total);
+    document.getElementById('statAvg').textContent    = (count > 0 ? (totPasien / count).toFixed(1) : 0) + ' Pasien';
     document.getElementById('sumPasienText').textContent = totPasien + ' Orang';
     document.getElementById('sumTotalText').textContent  = fmt(total);
 
-    let periodeText = 'Semua Data';
-    if (start && end)   periodeText = start + ' s/d ' + end;
-    else if (start)     periodeText = 'Mulai ' + start;
-    else if (end)       periodeText = 'Sampai ' + end;
-
+    let periodeText = (start && end) ? `${start} s/d ${end}` : (start ? `Mulai ${start}` : (end ? `Sampai ${end}` : 'Semua Data'));
     document.getElementById('badgePeriode').textContent = periodeText;
     document.getElementById('printPeriode').textContent = 'Periode: ' + periodeText;
 
     if (tabulatorTable) tabulatorTable.setData(rows);
 
-    if (rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Tidak ada data</td></tr>`;
-      return;
-    }
-
     tbody.innerHTML = rows.map((r, idx) => `
       <tr>
-        <td class="text-center fw-semibold text-muted">${idx + 1}</td>
-        <td>${fmtTglPrint(r.tanggal)}</td>
-        <td class="text-center">${r.fisio_90_pasien} Orang</td>
-        <td class="text-end fw-bold text-success">${fmt(r.total_nominal)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
+        <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${r.fisio_90_pasien} Orang</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(r.total_nominal)}</td>
       </tr>
     `).join('');
 
     tfoot.innerHTML = `
-      <tr class="tr-total">
-        <td colspan="2" class="text-end fw-bold ps-3">JUMLAH TOTAL (${count} hari)</td>
-        <td class="text-center fw-bold">${totPasien} Orang</td>
-        <td class="text-end fw-bold fs-5">${fmt(total)}</td>
+      <tr style="border-top:2.5px solid #000;">
+        <td colspan="2" style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">JUMLAH TOTAL (${count} hari)</td>
+        <td style="border:1px solid #000; padding:6px; text-align:center; font-weight:bold; color:#000;">${totPasien} Orang</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(total)}</td>
       </tr>
     `;
-  } catch (err) {
-    showToast('❌ Gagal memuat data: ' + err.message, 'bg-danger');
-  }
+  } catch (err) { showToast('❌ Gagal: ' + err.message, 'bg-danger'); }
 }
 
 function applyPreset(preset) {
@@ -296,29 +273,38 @@ function applyPreset(preset) {
   if (preset === 'this_month') { start = fd(new Date(now.getFullYear(), now.getMonth(), 1)); end = fd(now); }
   else if (preset === 'last_month') { start = fd(new Date(now.getFullYear(), now.getMonth()-1, 1)); end = fd(new Date(now.getFullYear(), now.getMonth(), 0)); }
   else if (preset === 'this_year') { start = fd(new Date(now.getFullYear(), 0, 1)); end = fd(now); }
-
-  document.getElementById('filterStart').value = start;
-  document.getElementById('filterEnd').value   = end;
-  loadData(start, end);
+  document.getElementById('filterStart').value = start; document.getElementById('filterEnd').value = end; loadData(start, end);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initTabulator();
-  loadData();
-
-  document.getElementById('btnFilter').addEventListener('click', () => {
-    loadData(document.getElementById('filterStart').value, document.getElementById('filterEnd').value);
+  initTabulator(); loadData();
+  document.getElementById('btnFilter').addEventListener('click', () => loadData(document.getElementById('filterStart').value, document.getElementById('filterEnd').value));
+  document.getElementById('btnReset').addEventListener('click', () => { document.getElementById('filterStart').value = ''; document.getElementById('filterEnd').value = ''; loadData(); });
+  document.querySelectorAll('.preset').forEach(el => el.addEventListener('click', function(e) { e.preventDefault(); applyPreset(this.dataset.preset); }));
+  document.getElementById('btnCetak').addEventListener('click', () => {
+    const printView = document.getElementById('print-view');
+    const periodeText = document.getElementById('printPeriode').textContent;
+    const tbodyHTML = document.getElementById('tbodyPrint').innerHTML;
+    const tfootHTML = document.getElementById('tfootPrint').innerHTML;
+    printView.innerHTML = `
+      <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:14px;">
+        <h1 style="font-size:15pt; font-weight:800; text-transform:uppercase; margin:0 0 4px 0; color:#000;">Laporan Pasien Fisioterapi Rp 90.000</h1>
+        <p style="font-size:9pt; color:#333; margin:0;">${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
+      </div>
+      <table style="width:100%; border-collapse:collapse; font-size:9.5pt; font-family:Arial, sans-serif; border:1.5px solid #000;">
+        <thead>
+          <tr style="border-bottom:2.5px solid #000; background:#f0f0f0;">
+            <th style="border:1px solid #000; padding:6px; text-align:center; width:50px; color:#000;">No</th>
+            <th style="border:1px solid #000; padding:6px; text-align:left; color:#000;">Tanggal Laporan</th>
+            <th style="border:1px solid #000; padding:6px; text-align:center; color:#000;">Jumlah Pasien (Rp 90rb)</th>
+            <th style="border:1px solid #000; padding:6px; text-align:right; width:220px; color:#000;">Total Pendapatan</th>
+          </tr>
+        </thead>
+        <tbody>${tbodyHTML}</tbody><tfoot>${tfootHTML}</tfoot>
+      </table>
+    `;
+    document.body.classList.add('printing-active'); window.print(); setTimeout(() => document.body.classList.remove('printing-active'), 1000);
   });
-  document.getElementById('btnReset').addEventListener('click', () => {
-    document.getElementById('filterStart').value = '';
-    document.getElementById('filterEnd').value   = '';
-    loadData();
-    showToast('Filter berhasil di-reset', 'bg-secondary');
-  });
-  document.querySelectorAll('.preset').forEach(el => {
-    el.addEventListener('click', function(e) { e.preventDefault(); applyPreset(this.dataset.preset); });
-  });
-  document.getElementById('btnCetak').addEventListener('click', () => { window.print(); });
 });
 </script>
 </body>

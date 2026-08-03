@@ -1,4 +1,9 @@
 <!-- Dedicated Embedded Print Stylesheet for PDF Print Preview -->
+<style>
+  #print-view {
+    display: none;
+  }
+</style>
 <style media="print">
   @page {
     margin: 10mm;
@@ -13,22 +18,6 @@
     -webkit-text-fill-color: #000000 !important;
     text-shadow: none !important;
     box-shadow: none !important;
-  }
-
-  /* Force Bootstrap table elements to be transparent background & black text/borders */
-  table,
-  table *,
-  .table,
-  .table *,
-  .table > :not(caption) > *,
-  .table > :not(caption) > * > * {
-    background: transparent !important;
-    background-color: transparent !important;
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
-    border-color: #000000 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
   }
 
   /* Hide screen UI controls, navbars, sidebars, footers, buttons */
@@ -51,23 +40,26 @@
     display: none !important;
   }
 
-  /* Sembunyikan #print-view secara default kecuali jika body memiliki class .printing-laporan */
-  #print-view {
-    display: none !important;
-  }
-
-  /* Jika sedang cetak Laporan Harian (laporan.php), sembunyikan .app-wrapper dan tampilkan #print-view */
+  /* Ketika mode cetak aktif (via JS trigger), sembunyikan .app-wrapper dan tampilkan #print-view */
+  body.printing-active .app-wrapper,
   body.printing-laporan .app-wrapper {
     display: none !important;
   }
 
+  body.printing-active #print-view,
   body.printing-laporan #print-view {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 
-  /* Reset layout AdminLTE 4 & browser flex/overflow agar dokumen cetak tidak terpotong */
+  /* Fallback reset layout jika mencetak langsung dari browser (Ctrl+P) */
   html,
   body,
   html.layout-fixed,
@@ -89,7 +81,9 @@
   .app-wrapper,
   .app-main,
   .app-content,
-  .container-fluid {
+  .container-fluid,
+  .card,
+  .card-body {
     display: block !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -106,28 +100,11 @@
     opacity: 1 !important;
   }
 
-  .card {
-    box-shadow: none !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-
-  .card-body {
-    padding: 0 !important;
-    background: transparent !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-
   .table-responsive {
     overflow: visible !important;
   }
 
-  /* Print Header (untuk detail pages: parkir, zai, ali, fisio, lab, fisio90) */
+  /* Fallback Print Header & Printable Table */
   .print-header {
     display: block !important;
     visibility: visible !important;
@@ -155,7 +132,6 @@
     margin: 2px 0 0 !important;
   }
 
-  /* Printable Table Formatting (untuk detail pages) */
   .print-only-table,
   #tabelParkirPrint,
   #tabelPrint {
@@ -223,26 +199,7 @@
     -webkit-text-fill-color: #000000 !important;
   }
 
-  .print-only {
-    display: inline !important;
-  }
-
-  .badge:not(.badge-date) {
-    display: none !important;
-  }
-
-  .badge-date {
-    display: none !important;
-  }
-
-  .print-date {
-    display: inline !important;
-    font-size: 9pt !important;
-    font-weight: 600 !important;
-    color: #000000 !important;
-  }
-
-  /* FOR LAPORAN.PHP PRINT VIEW (#print-view) */
+  /* Styling khusus Laporan.php #print-view */
   .pv-header {
     text-align: center !important;
     border-bottom: 2.5px solid #000000 !important;

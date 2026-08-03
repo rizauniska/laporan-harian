@@ -179,6 +179,8 @@ declare(strict_types=1);
     <div class="d-flex"><div class="toast-body" id="toastMsg"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
   </div>
 </div>
+<!-- PRINT VIEW (Hanya aktif saat cetak PDF) -->
+<div id="print-view"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
@@ -186,12 +188,35 @@ declare(strict_types=1);
 
 <script>
 'use strict';
+
 let tabulatorTable = null;
 
-function fmt(num) { return 'Rp\u00A0' + Math.round(Number(num) || 0).toLocaleString('id-ID'); }
-function fmtTglIndo(d) { try { return new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); } catch(_) { return d; } }
-function fmtTglPrint(d) { try { return new Date(d + 'T00:00:00').toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }); } catch(_) { return d; } }
-function showToast(msg, bg = 'bg-dark') { const t = document.getElementById('appToast'); t.className = `toast align-items-center text-white ${bg} border-0`; document.getElementById('toastMsg').textContent = msg; new bootstrap.Toast(t).show(); }
+function fmt(num) {
+  const n = Math.round(Number(num) || 0);
+  return 'Rp\u00A0' + n.toLocaleString('id-ID');
+}
+function fmtTglIndo(dateStr) {
+  if (!dateStr) return '-';
+  try {
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString('id-ID', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+  } catch (_) { return dateStr; }
+}
+function fmtTglPrint(dateStr) {
+  if (!dateStr) return '-';
+  try {
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString('id-ID', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+  } catch (_) { return dateStr; }
+}
+function showToast(msg, bgClass = 'bg-dark') {
+  const toastEl = document.getElementById('appToast');
+  toastEl.className = `toast align-items-center text-white ${bgClass} border-0`;
+  document.getElementById('toastMsg').textContent = msg;
+  new bootstrap.Toast(toastEl).show();
+}
 
 function initTabulator() {
   tabulatorTable = new Tabulator('#labTable', {
@@ -202,21 +227,17 @@ function initTabulator() {
     paginationSize: 15,
     paginationSizeSelector: [10, 15, 30, 50, 100],
     movableColumns: true,
-    placeholder: 'Tidak ada data Laboratorium',
+    placeholder: 'Tidak ada data',
     columns: [
       { title: 'No', formatter: 'rownum', width: 65, headerHozAlign: 'center', hozAlign: 'center', headerSort: false },
       {
-        title: 'Tanggal Laporan', field: 'tanggal', headerHozAlign: 'left',
+        title: 'Tanggal Laporan',
+        field: 'tanggal',
+        headerHozAlign: 'left',
         formatter: cell => `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(cell.getValue())}</span>`
       },
-      {
-        title: 'Jumlah Item', field: 'item_count', headerHozAlign: 'center', hozAlign: 'center', width: 130,
-        formatter: cell => `<span class="badge bg-secondary">${cell.getValue()} Item</span>`
-      },
-      {
-        title: 'Total Laboratorium', field: 'total_lab', headerHozAlign: 'right', hozAlign: 'right',
-        formatter: cell => `<span class="fw-bold text-warning">${fmt(cell.getValue())}</span>`
-      }
+      { title: 'Jumlah Item Lab', field: 'item_count', headerHozAlign: 'center', hozAlign: 'center', formatter: cell => `${cell.getValue()} Item` },
+      { title: 'Total Laboratorium', field: 'total_lab', headerHozAlign: 'right', hozAlign: 'right', formatter: cell => `<span class="fw-bold text-warning">${fmt(cell.getValue())}</span>` }
     ]
   });
 }
@@ -224,7 +245,8 @@ function initTabulator() {
 async function loadData(start = '', end = '') {
   const tbody = document.getElementById('tbodyPrint');
   const tfoot = document.getElementById('tfootPrint');
-  tbody.innerHTML = ''; tfoot.innerHTML = '';
+  tbody.innerHTML = '';
+  tfoot.innerHTML = '';
 
   try {
     let url = 'api/laboratorium.php';
@@ -246,7 +268,6 @@ async function loadData(start = '', end = '') {
     document.getElementById('statTotal').textContent   = fmt(total);
     document.getElementById('statItems').textContent   = totalItems + ' Item';
     document.getElementById('statAvg').textContent     = fmt(avg);
-    document.getElementById('sumTotalText').textContent = fmt(total);
 
     let periodeText = 'Semua Data';
     if (start && end)   periodeText = start + ' s/d ' + end;
@@ -265,18 +286,18 @@ async function loadData(start = '', end = '') {
 
     tbody.innerHTML = rows.map((r, idx) => `
       <tr>
-        <td class="text-center fw-semibold text-muted">${idx + 1}</td>
-        <td>${fmtTglPrint(r.tanggal)}</td>
-        <td class="text-center">${r.item_count} Item</td>
-        <td class="text-end fw-bold text-warning">${fmt(r.total_lab)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
+        <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${r.item_count} Item</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(r.total_lab)}</td>
       </tr>
     `).join('');
 
     tfoot.innerHTML = `
-      <tr class="tr-total">
-        <td colspan="2" class="text-end fw-bold ps-3">JUMLAH TOTAL (${count} hari)</td>
-        <td class="text-center fw-bold">${totalItems} Item</td>
-        <td class="text-end fw-bold fs-5">${fmt(total)}</td>
+      <tr style="border-top:2.5px solid #000;">
+        <td colspan="2" style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">JUMLAH TOTAL (${count} hari)</td>
+        <td style="border:1px solid #000; padding:6px; text-align:center; font-weight:bold; color:#000;">${totalItems} Item</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(total)}</td>
       </tr>
     `;
   } catch (err) {
@@ -312,7 +333,44 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.preset').forEach(el => {
     el.addEventListener('click', function(e) { e.preventDefault(); applyPreset(this.dataset.preset); });
   });
-  document.getElementById('btnCetak').addEventListener('click', () => { window.print(); });
+  document.getElementById('btnCetak').addEventListener('click', () => {
+    const printView = document.getElementById('print-view');
+    const periodeText = document.getElementById('printPeriode').textContent;
+    const tbodyHTML = document.getElementById('tbodyPrint').innerHTML;
+    const tfootHTML = document.getElementById('tfootPrint').innerHTML;
+
+    printView.innerHTML = `
+      <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:14px;">
+        <h1 style="font-size:15pt; font-weight:800; text-transform:uppercase; margin:0 0 4px 0; color:#000;">Laporan Pendapatan Laboratorium</h1>
+        <p style="font-size:9pt; color:#333; margin:0;">${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
+      </div>
+      <table style="width:100%; border-collapse:collapse; font-size:9.5pt; font-family:Arial, sans-serif; border:1.5px solid #000;">
+        <thead>
+          <tr style="border-bottom:2.5px solid #000; background:#f0f0f0;">
+            <th style="border:1px solid #000; padding:6px; text-align:center; width:50px; color:#000;">No</th>
+            <th style="border:1px solid #000; padding:6px; text-align:left; color:#000;">Tanggal Laporan</th>
+            <th style="border:1px solid #000; padding:6px; text-align:center; color:#000;">Jumlah Item Lab</th>
+            <th style="border:1px solid #000; padding:6px; text-align:right; width:220px; color:#000;">Total Laboratorium</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tbodyHTML}
+        </tbody>
+        <tfoot>
+          ${tfootHTML}
+        </tfoot>
+      </table>
+      <div style="margin-top:16px; padding-top:6px; border-top:1px dashed #666; font-size:8pt; color:#555; text-align:center;">
+        Dokumen ini digenerate otomatis oleh Sistem Laporan Keuangan Kasir PHP/MySQL
+      </div>
+    `;
+
+    document.body.classList.add('printing-active');
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove('printing-active');
+    }, 1000);
+  });
 });
 </script>
 </body>

@@ -206,15 +206,8 @@ declare(strict_types=1);
 
 </div><!-- /app-wrapper -->
 
-<!-- TOAST -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1100">
-  <div id="appToast" class="toast align-items-center text-white bg-dark border-0" role="alert">
-    <div class="d-flex">
-      <div class="toast-body" id="toastMsg"></div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-    </div>
-  </div>
-</div>
+<!-- PRINT VIEW (Hanya aktif saat cetak PDF) -->
+<div id="print-view"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
@@ -353,20 +346,20 @@ async function loadData(start = '', end = '') {
 
     tbodyPrint.innerHTML = rows.map((row, idx) => `
       <tr>
-        <td class="text-center fw-semibold text-muted">${idx + 1}</td>
-        <td>${fmtTglPrint(row.tanggal)}</td>
-        <td class="text-end fw-bold text-success">${fmt(row.parkir)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
+        <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(row.tanggal)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(row.parkir)}</td>
       </tr>
     `).join('');
 
     tfootPrint.innerHTML = `
-      <tr class="tr-total">
-        <td colspan="2" class="text-end fw-bold ps-3">JUMLAH TOTAL (${count} hari)</td>
-        <td class="text-end fw-bold fs-5">${fmt(total)}</td>
+      <tr style="border-top:2.5px solid #000;">
+        <td colspan="2" style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">JUMLAH TOTAL (${count} hari)</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(total)}</td>
       </tr>
-      <tr class="tr-gaji">
-        <td colspan="2" class="text-end fw-semibold ps-3 text-success">Gaji Upik (60% × Total)</td>
-        <td class="text-end fw-bold fs-5 text-success">${fmt(gajiUpik)}</td>
+      <tr style="border-top:1.5px dashed #000;">
+        <td colspan="2" style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">Gaji Upik (60% × Total)</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(gajiUpik)}</td>
       </tr>
     `;
 
@@ -428,7 +421,41 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btnCetak').addEventListener('click', () => {
+    const printView = document.getElementById('print-view');
+    const periodeText = document.getElementById('printPeriode').textContent;
+    const tbodyHTML = document.getElementById('tbodyParkirPrint').innerHTML;
+    const tfootHTML = document.getElementById('tfootParkirPrint').innerHTML;
+
+    printView.innerHTML = `
+      <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:14px;">
+        <h1 style="font-size:15pt; font-weight:800; text-transform:uppercase; margin:0 0 4px 0; color:#000;">Laporan Pendapatan Parkir</h1>
+        <p style="font-size:9pt; color:#333; margin:0;">${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
+      </div>
+      <table style="width:100%; border-collapse:collapse; font-size:9.5pt; font-family:Arial, sans-serif; border:1.5px solid #000;">
+        <thead>
+          <tr style="border-bottom:2.5px solid #000; background:#f0f0f0;">
+            <th style="border:1px solid #000; padding:6px; text-align:center; width:50px; color:#000;">No</th>
+            <th style="border:1px solid #000; padding:6px; text-align:left; color:#000;">Tanggal</th>
+            <th style="border:1px solid #000; padding:6px; text-align:right; width:220px; color:#000;">Pendapatan Parkir</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tbodyHTML}
+        </tbody>
+        <tfoot>
+          ${tfootHTML}
+        </tfoot>
+      </table>
+      <div style="margin-top:16px; padding-top:6px; border-top:1px dashed #666; font-size:8pt; color:#555; text-align:center;">
+        Dokumen ini digenerate otomatis oleh Sistem Laporan Keuangan Kasir PHP/MySQL
+      </div>
+    `;
+
+    document.body.classList.add('printing-active');
     window.print();
+    setTimeout(() => {
+      document.body.classList.remove('printing-active');
+    }, 1000);
   });
 });
 </script>
