@@ -28,117 +28,11 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
   <div class="app-wrapper">
 
-    <!-- ============ TOP NAVBAR ============ -->
-    <nav class="app-header navbar navbar-expand bg-white shadow-sm border-bottom">
-      <div class="container-fluid">
-        <!-- Sidebar Toggle -->
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
-              <i class="bi bi-list fs-5"></i>
-            </a>
-          </li>
-        </ul>
-        <!-- Brand -->
-        <a href="index.php" class="navbar-brand ms-2 d-none d-md-flex align-items-center gap-2">
-          <i class="bi bi-clipboard2-data text-primary fs-5"></i>
-          <span class="brand-text text-dark">Kasir Laporan Keuangan</span>
-        </a>
-        <!-- Toolbar: Riwayat dropdown + tanggal + aksi -->
-        <ul class="navbar-nav ms-auto align-items-center gap-1">
-          <!-- Tom Select Riwayat -->
-          <li class="nav-item" style="min-width:200px">
-            <select id="selectLaporan" class="form-select form-select-sm" title="Pilih laporan yang sudah ada">
-              <option value="">— Riwayat Laporan —</option>
-            </select>
-          </li>
-          <!-- Tombol Prev / Next -->
-          <li class="nav-item">
-            <div class="btn-group btn-group-sm">
-              <button class="btn btn-outline-secondary" id="btnPrev"
-                      title="Laporan sebelumnya" disabled>
-                <i class="bi bi-chevron-left"></i>
-              </button>
-              <button class="btn btn-outline-secondary" id="btnNext"
-                      title="Laporan berikutnya" disabled>
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            </div>
-          </li>
-          <!-- Input Tanggal -->
-          <li class="nav-item">
-            <input type="date" class="form-control form-control-sm" id="inputTanggal"
-              value="<?= htmlspecialchars($yesterday) ?>" style="width:145px">
-          </li>
-          <!-- Tombol Muat -->
-          <li class="nav-item">
-            <button class="btn btn-light btn-sm border fw-semibold" id="btnMuat">
-              <i class="bi bi-folder2-open"></i> Muat
-            </button>
-          </li>
-          <!-- Tombol Simpan -->
-          <li class="nav-item">
-            <button class="btn btn-success btn-sm fw-semibold" id="btnSave">
-              <i class="bi bi-floppy"></i> Simpan
-            </button>
-          </li>
-          <!-- Tombol Excel -->
-          <li class="nav-item">
-            <button class="btn btn-warning btn-sm text-dark fw-semibold" id="btnExcel">
-              <i class="bi bi-file-earmark-excel"></i> Excel
-            </button>
-          </li>
-          <!-- Tombol Cetak -->
-          <li class="nav-item">
-            <button class="btn btn-info btn-sm text-dark fw-semibold" id="btnCetak">
-              <i class="bi bi-printer"></i> Cetak
-            </button>
-          </li>
-          <!-- Tombol Hapus -->
-          <li class="nav-item">
-            <button class="btn btn-danger btn-sm" id="btnHapus" title="Hapus laporan ini">
-              <i class="bi bi-trash3"></i>
-            </button>
-          </li>
-        </ul>
-      </div>
-    </nav>
+    <!-- TOP NAVBAR -->
+    <?php require_once __DIR__ . '/includes/navbar.php'; ?>
 
-    <!-- ============ SIDEBAR ============ -->
-    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-      <div class="sidebar-brand">
-        <a href="index.php" class="brand-link d-flex align-items-center gap-2 px-3 py-3">
-          <i class="bi bi-clipboard2-data text-primary fs-4"></i>
-          <span class="brand-text fw-bold fs-6">Kasir Laporan</span>
-        </a>
-      </div>
-      <div class="sidebar-wrapper">
-        <nav class="mt-2">
-          <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
-            <li class="nav-header">MENU UTAMA</li>
-            <li class="nav-item">
-              <a href="index.php" class="nav-link">
-                <i class="nav-icon bi bi-speedometer2"></i>
-                <p>Dashboard</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="laporan.php" class="nav-link active">
-                <i class="nav-icon bi bi-file-earmark-medical"></i>
-                <p>Input / Edit Laporan</p>
-              </a>
-            </li>
-            <li class="nav-header">LAPORAN DETAIL</li>
-            <li class="nav-item"><a href="jm_dr_zainuddin.php" class="nav-link"><i class="nav-icon fas fa-user-md"></i><p>JM dr. Zainuddin</p></a></li>
-            <li class="nav-item"><a href="jm_dr_ali.php" class="nav-link"><i class="nav-icon fas fa-stethoscope"></i><p>JM dr. Ali</p></a></li>
-            <li class="nav-item"><a href="fisioterapi.php" class="nav-link"><i class="nav-icon fas fa-heartbeat"></i><p>Total Fisioterapi</p></a></li>
-            <li class="nav-item"><a href="laboratorium.php" class="nav-link"><i class="nav-icon fas fa-flask"></i><p>Total Laboratorium</p></a></li>
-            <li class="nav-item"><a href="fisio_90.php" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Pasien Fisio 90rb</p></a></li>
-            <li class="nav-item"><a href="parkir.php" class="nav-link"><i class="nav-icon fas fa-parking"></i><p>Pendapatan Parkir</p></a></li>
-          </ul>
-        </nav>
-      </div>
-    </aside>
+    <!-- SIDEBAR -->
+    <?php require_once __DIR__ . '/includes/sidebar.php'; ?>
 
     <!-- ============ MAIN CONTENT ============ -->
     <main class="app-main">
@@ -598,15 +492,8 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
       </div><!-- /app-content -->
     </main>
 
-    <!-- ============ FOOTER ============ -->
-    <footer class="app-footer">
-      <div class="float-end d-none d-sm-inline text-muted small">
-        Kasir Laporan Keuangan &copy; <?= date('Y') ?>
-      </div>
-      <span class="text-muted small">
-        <strong>Kasir Apotek &amp; Pendaftaran</strong> – Sistem Laporan Keuangan Harian
-      </span>
-    </footer>
+    <!-- FOOTER -->
+    <?php require_once __DIR__ . '/includes/footer.php'; ?>
 
   </div><!-- /app-wrapper -->
 

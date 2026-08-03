@@ -25,70 +25,11 @@ declare(strict_types=1);
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 <div class="app-wrapper">
 
-  <!-- ============ TOP NAVBAR ============ -->
-  <nav class="app-header navbar navbar-expand bg-white shadow-sm border-bottom">
-    <div class="container-fluid">
-      <!-- Sidebar Toggle -->
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
-            <i class="bi bi-list fs-5"></i>
-          </a>
-        </li>
-      </ul>
-      <!-- Brand -->
-      <a href="index.php" class="navbar-brand ms-2 d-none d-md-flex align-items-center gap-2">
-        <i class="bi bi-clipboard2-data text-primary fs-5"></i>
-        <span class="brand-text text-dark">Kasir Laporan Keuangan</span>
-      </a>
-      <!-- Right nav -->
-      <ul class="navbar-nav ms-auto align-items-center gap-2">
-        <li class="nav-item">
-          <a href="laporan.php" class="btn btn-primary btn-sm fw-semibold">
-            <i class="bi bi-plus-circle-fill me-1"></i> Input / Edit Laporan
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <!-- TOP NAVBAR -->
+  <?php require_once __DIR__ . '/includes/navbar.php'; ?>
 
-  <!-- ============ SIDEBAR ============ -->
-  <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-    <!-- Sidebar Brand -->
-    <div class="sidebar-brand">
-      <a href="index.php" class="brand-link d-flex align-items-center gap-2 px-3 py-3">
-        <i class="bi bi-clipboard2-data text-primary fs-4"></i>
-        <span class="brand-text fw-bold fs-6">Kasir Laporan</span>
-      </a>
-    </div>
-    <!-- Sidebar Menu -->
-    <div class="sidebar-wrapper">
-      <nav class="mt-2">
-        <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
-          <li class="nav-header">MENU UTAMA</li>
-          <li class="nav-item">
-            <a href="index.php" class="nav-link active">
-              <i class="nav-icon bi bi-speedometer2"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="laporan.php" class="nav-link">
-              <i class="nav-icon bi bi-file-earmark-medical"></i>
-              <p>Input / Edit Laporan</p>
-            </a>
-          </li>
-          <li class="nav-header">LAPORAN DETAIL</li>
-          <li class="nav-item"><a href="jm_dr_zainuddin.php" class="nav-link"><i class="nav-icon fas fa-user-md"></i><p>JM dr. Zainuddin</p></a></li>
-          <li class="nav-item"><a href="jm_dr_ali.php" class="nav-link"><i class="nav-icon fas fa-stethoscope"></i><p>JM dr. Ali</p></a></li>
-          <li class="nav-item"><a href="fisioterapi.php" class="nav-link"><i class="nav-icon fas fa-heartbeat"></i><p>Total Fisioterapi</p></a></li>
-          <li class="nav-item"><a href="laboratorium.php" class="nav-link"><i class="nav-icon fas fa-flask"></i><p>Total Laboratorium</p></a></li>
-          <li class="nav-item"><a href="fisio_90.php" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Pasien Fisio 90rb</p></a></li>
-          <li class="nav-item"><a href="parkir.php" class="nav-link"><i class="nav-icon fas fa-parking"></i><p>Pendapatan Parkir</p></a></li>
-        </ul>
-      </nav>
-    </div>
-  </aside>
+  <!-- SIDEBAR -->
+  <?php require_once __DIR__ . '/includes/sidebar.php'; ?>
 
   <!-- ============ MAIN CONTENT ============ -->
   <main class="app-main">
@@ -309,15 +250,8 @@ declare(strict_types=1);
     </div><!-- /app-content -->
   </main>
 
-  <!-- ============ FOOTER ============ -->
-  <footer class="app-footer">
-    <div class="float-end d-none d-sm-inline text-muted small">
-      Kasir Laporan Keuangan &copy; <?= date('Y') ?>
-    </div>
-    <span class="text-muted small">
-      <strong>Kasir Apotek &amp; Pendaftaran</strong> – Sistem Laporan Keuangan Harian
-    </span>
-  </footer>
+  <!-- FOOTER -->
+  <?php require_once __DIR__ . '/includes/footer.php'; ?>
 
 </div><!-- /app-wrapper -->
 
