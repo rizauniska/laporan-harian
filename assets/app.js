@@ -543,13 +543,13 @@ function buildRekap() {
     <tr><td>Penjualan Pakai Resep</td><td class="text-end">${fmt(aResep)}</td></tr>
     <tr><td>Penjualan Bebas</td><td class="text-end">${fmt(aBebas)}</td></tr>
     <tr class="tr-total"><td>Total Penjualan Apotek</td><td class="text-end text-success">${fmt(aTotalPenj)}</td></tr>
-    ${aJmDrZainuddin > 0 ? `<tr class="table-light text-muted"><td>↳ Ter-include JM dr. Zainuddin</td><td class="text-end text-info-emphasis">${fmt(aJmDrZainuddin)}</td></tr>` : ''}
-    ${aJmDrAliProgram > 0 ? `<tr class="table-light text-muted"><td>↳ Ter-include JM dr. Ali (Program)</td><td class="text-end text-info-emphasis">${fmt(aJmDrAliProgram)}</td></tr>` : ''}
-    ${aJmDrAliNonProgram > 0 ? `<tr class="table-light text-muted"><td>↳ Ter-include JM dr. Ali (non Program)</td><td class="text-end text-info-emphasis">${fmt(aJmDrAliNonProgram)}</td></tr>` : ''}
+    ${aJmDrZainuddin > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Zai</td><td class="text-end text-info-emphasis">${fmt(aJmDrZainuddin)}</td></tr>` : ''}
+    ${aJmDrAliProgram > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Ali (Program)</td><td class="text-end text-info-emphasis">${fmt(aJmDrAliProgram)}</td></tr>` : ''}
+    ${aJmDrAliNonProgram > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Ali (non Program)</td><td class="text-end text-info-emphasis">${fmt(aJmDrAliNonProgram)}</td></tr>` : ''}
     <tr class="table-light text-muted"><td>↳ Bayar Cash</td><td class="text-end">${fmt(aCash)}</td></tr>
     <tr class="table-light text-muted"><td>↳ Bayar Transfer</td><td class="text-end">${fmt(aTransfer)}</td></tr>
     <tr class="tr-section"><td colspan="2">Pengeluaran</td></tr>
-    <tr><td>Transfer (otomatis)</td><td class="text-end text-danger">${fmt(aTransfer)}</td></tr>
+    <tr><td>Rekening Millenia</td><td class="text-end text-danger">${fmt(aTransfer)}</td></tr>
   `;
   aExpRows.forEach(r => {
     aHtml += `<tr><td>${escHtml(r.ket)}</td><td class="text-end text-danger">${fmt(r.nom)}</td></tr>`;
@@ -694,13 +694,13 @@ function buildPrintView() {
         ${tr('', 'Penjualan Pakai Resep', fmt(aResep))}
         ${tr('', 'Penjualan Bebas', fmt(aBebas))}
         ${tr('tr-total', 'Total Penjualan', fmt(aTotalPenj))}
-        ${aJmDrZainuddin > 0 ? tr('tr-sub', '↳ Ter-include JM dr. Zainuddin', fmt(aJmDrZainuddin)) : ''}
-        ${aJmDrAliProgram > 0 ? tr('tr-sub', '↳ Ter-include JM dr. Ali (Program)', fmt(aJmDrAliProgram)) : ''}
-        ${aJmDrAliNonProgram > 0 ? tr('tr-sub', '↳ Ter-include JM dr. Ali (non Program)', fmt(aJmDrAliNonProgram)) : ''}
+        ${aJmDrZainuddin > 0 ? tr('tr-sub', '↳ JM dr. Zai', fmt(aJmDrZainuddin)) : ''}
+        ${aJmDrAliProgram > 0 ? tr('tr-sub', '↳ JM dr. Ali (Program)', fmt(aJmDrAliProgram)) : ''}
+        ${aJmDrAliNonProgram > 0 ? tr('tr-sub', '↳ JM dr. Ali (non Program)', fmt(aJmDrAliNonProgram)) : ''}
         ${tr('tr-sub', '↳ Bayar Cash', fmt(aCash))}
         ${tr('tr-sub', '↳ Bayar Transfer', fmt(aTransfer))}
         ${tr('tr-section', 'PENGELUARAN', '')}
-        ${tr('', 'Transfer (otomatis)', fmt(aTransfer))}
+        ${tr('', 'Rekening Millenia', fmt(aTransfer))}
         ${aExpRows.map(r => trM(r.ket, r.nom)).join('')}
         ${tr('tr-total', 'Total Pengeluaran', fmt(aTotalExp))}
         ${tr('tr-saldo', 'SALDO AKHIR', fmt(aSaldo))}
@@ -840,9 +840,9 @@ function exportExcel() {
     [],
     ['Pemasukan', '', '', ''],
     ['Apotek', '', aTotalPenj, ''],
-    aJmDrZainuddin > 0 ? ['  ↳ (Ter-include JM dr. Zainuddin)', '', aJmDrZainuddin, ''] : null,
-    aJmDrAliProgram > 0 ? ['  ↳ (Ter-include JM dr. Ali Program)', '', aJmDrAliProgram, ''] : null,
-    aJmDrAliNonProgram > 0 ? ['  ↳ (Ter-include JM dr. Ali non Program)', '', aJmDrAliNonProgram, ''] : null,
+    aJmDrZainuddin > 0 ? ['  ↳ (JM dr. Zai)', '', aJmDrZainuddin, ''] : null,
+    aJmDrAliProgram > 0 ? ['  ↳ (JM dr. Ali Program)', '', aJmDrAliProgram, ''] : null,
+    aJmDrAliNonProgram > 0 ? ['  ↳ (JM dr. Ali non Program)', '', aJmDrAliNonProgram, ''] : null,
     ['Laboratorium', '', pTotalLab > 0 ? pTotalLab : '', ''],
     ['Fisiotherapy', '', pFisioTotal > 0 ? pFisioTotal : '', ''],
     ['Parkir', '', pParkir > 0 ? pParkir : '', ''],
@@ -895,7 +895,7 @@ function exportExcel() {
     ['↳ Bayar Transfer', aTransfer],
     [],
     ['PENGELUARAN', 'Nominal (Rp)'],
-    ['Transfer (otomatis)', aTransfer],
+    ['Rekening Millenia', aTransfer],
     ...aExpRows,
     ['Total Pengeluaran', aTotalExp],
     [],
