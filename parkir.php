@@ -29,6 +29,14 @@ declare(strict_types=1);
     .stat-card.total-card   { border-color: #0d6efd; }
     .stat-card.count-card   { border-color: #198754; }
 
+    /* ---- Baris Gaji Upik ---- */
+    #tabelParkir .tr-gaji td {
+      border-top: 1.5px dashed #198754 !important;
+      color: #198754;
+      font-weight: 700;
+      background: rgba(25,135,84,.04);
+    }
+
       /* ===================================================
          PRINT STYLES — fix AdminLTE 4 layout
          =================================================== */
@@ -125,7 +133,14 @@ declare(strict_types=1);
           padding: 0 !important;
           font-size: 9pt !important;
         }
-        .badge-date i { display: none !important; }
+        /* Baris Gaji Upik: border atas putus-putus, teks bold */
+        #tabelParkir .tr-gaji td {
+          border-top: 1.5px dashed #555 !important;
+          font-weight: 700 !important;
+        }
+        /* Tampilkan keterangan (60% × Total) saat print */
+        .print-only { display: inline !important; }
+        .badge { display: none !important; }
       }
 
     /* Print header hidden on screen */
@@ -479,13 +494,22 @@ async function loadData(start = '', end = '') {
       </tr>
     `).join('');
 
-    // Total row
+    // Total & Gaji Upik row
+    const gajiUpik = Math.round(total * 0.60);
     tfoot.innerHTML = `
       <tr class="tr-total">
         <td colspan="2" class="text-end fw-bold ps-3">
           <i class="bi bi-sigma me-1"></i>JUMLAH TOTAL (${count} hari)
         </td>
         <td class="text-end fw-bold fs-5">${fmt(total)}</td>
+      </tr>
+      <tr class="tr-gaji">
+        <td colspan="2" class="text-end fw-semibold ps-3 text-success">
+          <i class="bi bi-person-fill me-1"></i>Gaji Upik
+          <span class="badge bg-success-subtle text-success border border-success ms-1 no-print" style="font-size:.7rem">60%</span>
+          <span class="print-only" style="display:none;font-size:8pt;color:#555"> (60% × Total)</span>
+        </td>
+        <td class="text-end fw-bold fs-5 text-success">${fmt(gajiUpik)}</td>
       </tr>
     `;
 
