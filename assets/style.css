@@ -271,7 +271,16 @@ body {
     size: A4 portrait;
   }
 
-  /* Sembunyikan elemen UI nav, sidebar & footer */
+  /* Universal Text Color Reset for Print: All text default to solid black */
+  *,
+  *::before,
+  *::after {
+    color: #000 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Sembunyikan elemen UI nav, sidebar, footer & kontrol layar */
   .app-header,
   .app-sidebar,
   .app-footer,
@@ -281,7 +290,8 @@ body {
   .card-tools,
   .breadcrumb,
   .app-content-header,
-  .tabulator {
+  .tabulator,
+  .card-header {
     display: none !important;
   }
 
@@ -299,64 +309,60 @@ body {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    color: #000 !important;
   }
 
   .app-wrapper,
   .app-main,
-  .app-content {
+  .app-content,
+  .container-fluid {
     display: block !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     min-height: auto !important;
-  }
-
-  .container-fluid {
-    padding: 0 !important;
-    max-width: 100% !important;
+    background: #fff !important;
   }
 
   .card {
     box-shadow: none !important;
     border: none !important;
     margin: 0 !important;
-  }
-
-  .card-header {
+    padding: 0 !important;
     background: #fff !important;
-    border-bottom: 1.5px solid #333 !important;
-    padding: 6px 0 !important;
   }
 
   .card-body {
     padding: 0 !important;
+    background: #fff !important;
   }
 
   .table-responsive {
     overflow: visible !important;
   }
 
-  /* Print Header & Print Table (untuk detail pages) */
+  /* Print Header & Print Table (untuk detail pages: parkir, zai, ali, fisio, lab, fisio90) */
   .print-header {
     display: block !important;
-    text-align: center;
-    border-bottom: 2px solid #333;
-    padding-bottom: 8px;
-    margin-bottom: 14px;
+    text-align: center !important;
+    border-bottom: 2px solid #000 !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 14px !important;
   }
 
   .print-header h2,
   .print-header h1 {
-    font-size: 14pt;
-    font-weight: 800;
-    text-transform: uppercase;
-    margin: 0;
+    font-size: 14pt !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    margin: 0 0 4px 0 !important;
+    color: #000 !important;
   }
 
   .print-header p {
-    font-size: 9pt;
-    color: #555;
-    margin: 2px 0 0;
+    font-size: 9pt !important;
+    color: #333 !important;
+    margin: 2px 0 0 !important;
   }
 
   .print-only-table {
@@ -364,6 +370,7 @@ body {
     width: 100% !important;
     border-collapse: collapse !important;
     font-size: 9pt !important;
+    margin-top: 10px !important;
   }
 
   /* Detail Pages Table Formatting */
@@ -373,9 +380,9 @@ body {
   #tabelParkirPrint td,
   #tabelPrint th,
   #tabelPrint td {
-    border: 1px solid #999 !important;
+    border: 1px solid #666 !important;
     padding: 5px 8px !important;
-    background: transparent !important;
+    background: #fff !important;
     color: #000 !important;
   }
 
@@ -390,21 +397,34 @@ body {
   #tabelPrint th {
     font-weight: 800 !important;
     border-bottom: 2.5px solid #000 !important;
-    text-transform: uppercase;
-    letter-spacing: .04em;
+    text-transform: uppercase !important;
+    letter-spacing: .04em !important;
+    background: #f0f0f0 !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
+  .print-only-table .tr-total td,
   #tabelParkirPrint .tr-total td,
   #tabelPrint .tr-total td {
     border-top: 2.5px solid #000 !important;
+    border-bottom: 1.5px solid #000 !important;
     font-weight: 800 !important;
     font-size: 10pt !important;
+    background: #f8f9fa !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
+  .print-only-table .tr-gaji td,
   #tabelParkirPrint .tr-gaji td,
   #tabelPrint .tr-gaji td {
-    border-top: 1.5px dashed #555 !important;
+    border-top: 1.5px dashed #000 !important;
     font-weight: 700 !important;
+    font-size: 9.5pt !important;
+    color: #000 !important;
   }
 
   .print-only {
@@ -515,7 +535,7 @@ body {
 
   .pv-table .tr-sub td:first-child {
     padding-left: 16px !important;
-    color: #444 !important;
+    color: #333 !important;
     font-style: italic !important;
   }
 
