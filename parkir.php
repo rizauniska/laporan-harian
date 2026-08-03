@@ -140,7 +140,16 @@ declare(strict_types=1);
         }
         /* Tampilkan keterangan (60% × Total) saat print */
         .print-only { display: inline !important; }
-        .badge { display: none !important; }
+        /* Sembunyikan hanya badge non-tanggal (misal badge "60%"),
+           jangan sembunyikan .badge-date yang membungkus kolom tanggal */
+        .badge:not(.badge-date) { display: none !important; }
+        /* Pastikan badge-date tetap tampil sebagai teks biasa */
+        .badge-date {
+          display: inline !important;
+          border: none !important;
+          padding: 0 !important;
+          font-size: 9pt !important;
+        }
       }
 
     /* Print header hidden on screen */
