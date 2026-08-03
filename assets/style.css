@@ -271,13 +271,30 @@ body {
     size: A4 portrait;
   }
 
-  /* Universal Text Color Reset for Print: All text default to solid black */
+  /* Universal Text Color Reset for Print */
   *,
   *::before,
   *::after {
-    color: #000 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
     text-shadow: none !important;
     box-shadow: none !important;
+  }
+
+  /* Force Bootstrap table elements to be transparent background & black text/borders */
+  table,
+  table *,
+  .table,
+  .table *,
+  .table > :not(caption) > *,
+  .table > :not(caption) > * > * {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    border-color: #000000 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   /* Sembunyikan elemen UI nav, sidebar, footer & kontrol layar */
@@ -303,13 +320,13 @@ body {
 
   /* Reset layout AdminLTE 4 agar margin 0 saat cetak */
   html, body {
-    background: #fff !important;
+    background: #ffffff !important;
     font-family: Arial, sans-serif !important;
     font-size: 9pt !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    color: #000 !important;
+    color: #000000 !important;
   }
 
   .app-wrapper,
@@ -321,7 +338,9 @@ body {
     padding: 0 !important;
     width: 100% !important;
     min-height: auto !important;
-    background: #fff !important;
+    background: transparent !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .card {
@@ -329,23 +348,29 @@ body {
     border: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: #fff !important;
+    background: transparent !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .card-body {
     padding: 0 !important;
-    background: #fff !important;
+    background: transparent !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .table-responsive {
     overflow: visible !important;
   }
 
-  /* Print Header & Print Table (untuk detail pages: parkir, zai, ali, fisio, lab, fisio90) */
+  /* Print Header (untuk detail pages: parkir, zai, ali, fisio, lab, fisio90) */
   .print-header {
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     text-align: center !important;
-    border-bottom: 2px solid #000 !important;
+    border-bottom: 2px solid #000000 !important;
     padding-bottom: 8px !important;
     margin-bottom: 14px !important;
   }
@@ -356,75 +381,83 @@ body {
     font-weight: 800 !important;
     text-transform: uppercase !important;
     margin: 0 0 4px 0 !important;
-    color: #000 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
 
   .print-header p {
     font-size: 9pt !important;
-    color: #333 !important;
+    color: #333333 !important;
+    -webkit-text-fill-color: #333333 !important;
     margin: 2px 0 0 !important;
   }
 
-  .print-only-table {
+  /* Printable Table Formatting (untuk detail pages) */
+  .print-only-table,
+  #tabelParkirPrint,
+  #tabelPrint {
     display: table !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     width: 100% !important;
     border-collapse: collapse !important;
     font-size: 9pt !important;
     margin-top: 10px !important;
+    border: 1.5px solid #000000 !important;
   }
 
-  /* Detail Pages Table Formatting */
   .print-only-table th,
   .print-only-table td,
   #tabelParkirPrint th,
   #tabelParkirPrint td,
   #tabelPrint th,
   #tabelPrint td {
-    border: 1px solid #666 !important;
+    border: 1px solid #000000 !important;
     padding: 5px 8px !important;
-    background: #fff !important;
-    color: #000 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .print-only-table thead tr,
   #tabelParkirPrint thead tr,
   #tabelPrint thead tr {
-    border-bottom: 2.5px solid #000 !important;
+    border-bottom: 2.5px solid #000000 !important;
   }
 
   .print-only-table th,
   #tabelParkirPrint th,
   #tabelPrint th {
     font-weight: 800 !important;
-    border-bottom: 2.5px solid #000 !important;
+    border-bottom: 2.5px solid #000000 !important;
     text-transform: uppercase !important;
     letter-spacing: .04em !important;
-    background: #f0f0f0 !important;
-    color: #000 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
 
   .print-only-table .tr-total td,
   #tabelParkirPrint .tr-total td,
   #tabelPrint .tr-total td {
-    border-top: 2.5px solid #000 !important;
-    border-bottom: 1.5px solid #000 !important;
+    border-top: 2.5px solid #000000 !important;
+    border-bottom: 1.5px solid #000000 !important;
     font-weight: 800 !important;
     font-size: 10pt !important;
-    background: #f8f9fa !important;
-    color: #000 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
 
   .print-only-table .tr-gaji td,
   #tabelParkirPrint .tr-gaji td,
   #tabelPrint .tr-gaji td {
-    border-top: 1.5px dashed #000 !important;
+    border-top: 1.5px dashed #000000 !important;
     font-weight: 700 !important;
     font-size: 9.5pt !important;
-    color: #000 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
 
   .print-only {
@@ -443,7 +476,7 @@ body {
     display: inline !important;
     font-size: 9pt !important;
     font-weight: 600 !important;
-    color: #000 !important;
+    color: #000000 !important;
   }
 
   /* ==========================================================================
@@ -451,14 +484,16 @@ body {
      ========================================================================== */
   #print-view {
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     padding: 0 !important;
     margin: 0 !important;
-    color: #000 !important;
+    color: #000000 !important;
   }
 
   .pv-header {
     text-align: center !important;
-    border-bottom: 2.5px solid #000 !important;
+    border-bottom: 2.5px solid #000000 !important;
     padding-bottom: 6px !important;
     margin-bottom: 12px !important;
   }
@@ -468,12 +503,14 @@ body {
     font-weight: 800 !important;
     text-transform: uppercase !important;
     margin: 0 0 4px 0 !important;
-    color: #000 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
 
   .pv-meta {
     font-size: 8.5pt !important;
-    color: #333 !important;
+    color: #333333 !important;
+    -webkit-text-fill-color: #333333 !important;
     font-weight: 600 !important;
   }
 
@@ -485,7 +522,7 @@ body {
   }
 
   .pv-section {
-    border: 1px solid #333 !important;
+    border: 1.5px solid #000000 !important;
     border-radius: 4px !important;
     overflow: hidden !important;
   }
@@ -493,12 +530,13 @@ body {
   .pv-section-title {
     background: #1a1a2e !important;
     color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
     font-weight: 800 !important;
     font-size: 9pt !important;
     padding: 5px 8px !important;
     text-transform: uppercase !important;
     letter-spacing: .03em !important;
-    border-bottom: 1.5px solid #000 !important;
+    border-bottom: 1.5px solid #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -511,8 +549,9 @@ body {
 
   .pv-table td {
     padding: 3px 6px !important;
-    border: 1px solid #bbb !important;
-    color: #000 !important;
+    border: 1px solid #000000 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
 
   .pv-table td:last-child {
@@ -526,25 +565,28 @@ body {
     font-weight: 800 !important;
     font-size: 8pt !important;
     text-transform: uppercase !important;
-    color: #000 !important;
-    border-top: 1.5px solid #000 !important;
-    border-bottom: 1.5px solid #000 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    border-top: 1.5px solid #000000 !important;
+    border-bottom: 1.5px solid #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
   .pv-table .tr-sub td:first-child {
     padding-left: 16px !important;
-    color: #333 !important;
+    color: #333333 !important;
+    -webkit-text-fill-color: #333333 !important;
     font-style: italic !important;
   }
 
   .pv-table .tr-total td {
     font-weight: 800 !important;
-    border-top: 2px solid #000 !important;
-    border-bottom: 1.5px solid #000 !important;
+    border-top: 2px solid #000000 !important;
+    border-bottom: 1.5px solid #000000 !important;
     background: #f3f4f6 !important;
-    color: #000 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -555,17 +597,20 @@ body {
     background: #d1fae5 !important;
     border: 2px solid #065f46 !important;
     color: #064e3b !important;
+    -webkit-text-fill-color: #064e3b !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
   .txt-minus {
     color: #dc2626 !important;
+    -webkit-text-fill-color: #dc2626 !important;
     font-weight: 700 !important;
   }
 
   .txt-plus {
     color: #16a34a !important;
+    -webkit-text-fill-color: #16a34a !important;
     font-weight: 700 !important;
   }
 
@@ -577,12 +622,14 @@ body {
     width: 100% !important;
     border-collapse: collapse !important;
     font-size: 9pt !important;
+    border: 1.5px solid #000000 !important;
   }
 
   .pv-grand td {
     padding: 5px 9px !important;
-    border: 1.5px solid #000 !important;
-    color: #000 !important;
+    border: 1.5px solid #000000 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
   }
 
   .pv-grand td:last-child {
@@ -593,10 +640,11 @@ body {
   .pv-grand .tr-grand-title td {
     background: #0f766e !important;
     color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
     font-weight: 800 !important;
     font-size: 9.5pt !important;
     text-transform: uppercase !important;
-    border-bottom: 2px solid #000 !important;
+    border-bottom: 2px solid #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -604,7 +652,8 @@ body {
   .pv-grand .tr-grand-row td {
     background: #f0fdf4 !important;
     font-weight: 600 !important;
-    color: #000 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -614,8 +663,9 @@ body {
     font-weight: 800 !important;
     font-size: 12pt !important;
     color: #064e3b !important;
-    border-top: 2.5px solid #000 !important;
-    border-bottom: 2.5px solid #000 !important;
+    -webkit-text-fill-color: #064e3b !important;
+    border-top: 2.5px solid #000000 !important;
+    border-bottom: 2.5px solid #000000 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
@@ -623,9 +673,10 @@ body {
   .pv-footer {
     margin-top: 14px !important;
     padding-top: 6px !important;
-    border-top: 1px dashed #666 !important;
+    border-top: 1px dashed #666666 !important;
     font-size: 7.5pt !important;
-    color: #555 !important;
+    color: #555555 !important;
+    -webkit-text-fill-color: #555555 !important;
     text-align: center !important;
   }
 }
