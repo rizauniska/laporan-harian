@@ -312,20 +312,38 @@ body {
     display: none !important;
   }
 
-  /* Jika sedang cetak Laporan Harian (laporan.php), sembunyikan .app-wrapper */
-  body.printing-laporan .app-wrapper,
-  body:has(#print-view:not(:empty)) .app-wrapper {
+  /* Sembunyikan #print-view secara default kecuali jika body memiliki class .printing-laporan */
+  #print-view {
     display: none !important;
   }
 
-  /* Reset layout AdminLTE 4 agar margin 0 saat cetak */
-  html, body {
+  /* Jika sedang cetak Laporan Harian (laporan.php), sembunyikan .app-wrapper dan tampilkan #print-view */
+  body.printing-laporan .app-wrapper {
+    display: none !important;
+  }
+
+  body.printing-laporan #print-view {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Reset layout AdminLTE 4 & browser flex/overflow agar dokumen cetak tidak terpotong */
+  html,
+  body,
+  html.layout-fixed,
+  body.layout-fixed {
     background: #ffffff !important;
     font-family: Arial, sans-serif !important;
     font-size: 9pt !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: static !important;
     color: #000000 !important;
   }
 
@@ -337,7 +355,13 @@ body {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    min-height: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: static !important;
+    float: none !important;
+    flex: none !important;
     background: transparent !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -482,15 +506,6 @@ body {
   /* ==========================================================================
      FOR LAPORAN.PHP PRINT VIEW (#print-view)
      ========================================================================== */
-  #print-view {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    color: #000000 !important;
-  }
-
   .pv-header {
     text-align: center !important;
     border-bottom: 2.5px solid #000000 !important;
