@@ -186,12 +186,12 @@ declare(strict_types=1);
             </a>
           </li>
           <li class="nav-header">LAPORAN DETAIL</li>
-          <li class="nav-item">
-            <a href="parkir.php" class="nav-link active">
-              <i class="nav-icon fas fa-parking"></i>
-              <p>Pendapatan Parkir</p>
-            </a>
-          </li>
+          <li class="nav-item"><a href="jm_dr_zainuddin.php" class="nav-link"><i class="nav-icon fas fa-user-md"></i><p>JM dr. Zainuddin</p></a></li>
+          <li class="nav-item"><a href="jm_dr_ali.php" class="nav-link"><i class="nav-icon fas fa-stethoscope"></i><p>JM dr. Ali</p></a></li>
+          <li class="nav-item"><a href="fisioterapi.php" class="nav-link"><i class="nav-icon fas fa-heartbeat"></i><p>Total Fisioterapi</p></a></li>
+          <li class="nav-item"><a href="laboratorium.php" class="nav-link"><i class="nav-icon fas fa-flask"></i><p>Total Laboratorium</p></a></li>
+          <li class="nav-item"><a href="fisio_90.php" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Pasien Fisio 90rb</p></a></li>
+          <li class="nav-item"><a href="parkir.php" class="nav-link active"><i class="nav-icon fas fa-parking"></i><p>Pendapatan Parkir</p></a></li>
         </ul>
       </nav>
     </div>
