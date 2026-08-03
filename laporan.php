@@ -348,6 +348,19 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
               <option value="">— Riwayat Laporan —</option>
             </select>
           </li>
+          <!-- Tombol Prev / Next -->
+          <li class="nav-item">
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" id="btnPrev"
+                      title="Laporan sebelumnya" disabled>
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button class="btn btn-outline-secondary" id="btnNext"
+                      title="Laporan berikutnya" disabled>
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </li>
           <!-- Input Tanggal -->
           <li class="nav-item">
             <input type="date" class="form-control form-control-sm" id="inputTanggal"

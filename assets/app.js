@@ -290,11 +290,34 @@ function renumberLab() {
 // Tom Select instance (searchable dropdown riwayat)
 let tomSelectLaporan = null;
 
+// Semua tanggal laporan tersimpan (urut ascending) untuk navigasi prev/next
+let allDates = [];
+
+/** Update status aktif/nonaktif tombol Prev & Next */
+function updateNavButtons(currentTanggal) {
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  if (!btnPrev || !btnNext) return;
+
+  const idx = allDates.indexOf(currentTanggal);
+  if (idx === -1) {
+    btnPrev.disabled = true;
+    btnNext.disabled = true;
+    return;
+  }
+  // allDates urut ascending → prev = lebih kecil (idx-1), next = lebih besar (idx+1)
+  btnPrev.disabled = (idx <= 0);
+  btnNext.disabled = (idx >= allDates.length - 1);
+}
+
 async function fetchRiwayatList() {
   try {
     const res = await fetch('api/list.php');
     const json = await res.json();
     if (json.success && Array.isArray(json.data)) {
+      // Simpan semua tanggal urut ascending untuk navigasi prev/next
+      allDates = json.data.map(item => item.tanggal).reverse(); // list.php DESC → balik jadi ASC
+
       const options = [
         { value: '', text: '— Riwayat Laporan —' },
         ...json.data.map(item => ({
@@ -343,6 +366,13 @@ async function loadLaporan(tanggal) {
 
     currentLaporanId = data.id || null;
 
+    // Sync Tom Select ke tanggal yang dimuat
+    if (tomSelectLaporan) {
+      tomSelectLaporan.setValue(tanggal, true); // true = silent (tanpa trigger onChange)
+    }
+
+    // Update tombol prev/next
+    updateNavButtons(tanggal);
     // Set UI active
     document.getElementById('welcomeScreen').classList.add('d-none');
     document.getElementById('mainContent').classList.remove('d-none');
@@ -956,6 +986,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnMuat').addEventListener('click', () => {
     const tgl = document.getElementById('inputTanggal').value;
     if (tgl) loadLaporan(tgl);
+  });
+
+  // Tombol Prev (laporan sebelumnya)
+  document.getElementById('btnPrev').addEventListener('click', () => {
+    const currentTgl = document.getElementById('inputTanggal').value;
+    const idx = allDates.indexOf(currentTgl);
+    if (idx > 0) loadLaporan(allDates[idx - 1]);
+  });
+
+  // Tombol Next (laporan berikutnya)
+  document.getElementById('btnNext').addEventListener('click', () => {
+    const currentTgl = document.getElementById('inputTanggal').value;
+    const idx = allDates.indexOf(currentTgl);
+    if (idx >= 0 && idx < allDates.length - 1) loadLaporan(allDates[idx + 1]);
   });
 
   document.getElementById('selectLaporan').addEventListener('change', (e) => {
