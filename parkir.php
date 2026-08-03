@@ -55,8 +55,6 @@ declare(strict_types=1);
           padding: 0 !important;
           width: 100% !important;
         }
-        /* AdminLTE 4 menambahkan margin-left pada .app-main untuk sidebar,
-           reset agar konten muncul dari pinggir kiri */
         .app-wrapper,
         .app-main,
         .app-content {
@@ -71,24 +69,26 @@ declare(strict_types=1);
           max-width: 100% !important;
         }
 
-        /* --- Card: hilangkan shadow/border berlebih --- */
-        .card {
-          box-shadow: none !important;
-          border: none !important;
-          margin: 0 !important;
-        }
-        .card-header {
-          background: #fff !important;
-          border-bottom: 1.5px solid #333 !important;
-          padding: 6px 0 !important;
-          color: #000 !important;
-        }
-        .card-header .card-title { color: #000 !important; }
+        /* --- Card --- */
+        .card { box-shadow: none !important; border: none !important; margin: 0 !important; }
+        .card-header { background: #fff !important; border-bottom: 1.5px solid #333 !important; padding: 6px 0 !important; }
         .card-body { padding: 0 !important; }
         .table-responsive { overflow: visible !important; }
 
         /* --- Tampilkan print header --- */
         .print-header { display: block !important; }
+
+        /* =====================================================
+           FIX: Paksa semua teks jadi hitam — tidak bergantung
+           pada "Background Graphics" di dialog print browser.
+           Gunakan border tebal sebagai pengganti warna background.
+           ===================================================== */
+        * {
+          color: #000 !important;
+          background: transparent !important;
+          -webkit-print-color-adjust: economy;
+          print-color-adjust: economy;
+        }
 
         /* --- Tabel --- */
         #tabelParkir {
@@ -98,28 +98,32 @@ declare(strict_types=1);
         }
         #tabelParkir th,
         #tabelParkir td {
-          border: 1px solid #bbb !important;
+          border: 1px solid #999 !important;
           padding: 5px 8px !important;
+          background: transparent !important;
+          color: #000 !important;
+        }
+        /* Header: border bawah tebal + huruf kapital, bukan background gelap */
+        #tabelParkir thead tr {
+          border-bottom: 2.5px solid #000 !important;
         }
         #tabelParkir th {
-          background: #1a1a2e !important;
-          color: #fff !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
+          font-weight: 800 !important;
+          border-bottom: 2.5px solid #000 !important;
+          text-transform: uppercase;
+          letter-spacing: .04em;
         }
+        /* Baris Total: border atas tebal, bukan background hijau */
         #tabelParkir .tr-total td {
-          background: #d1e7dd !important;
+          border-top: 2.5px solid #000 !important;
           font-weight: 800 !important;
           font-size: 10pt !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
         }
+        /* Badge tanggal: tampil sebagai teks biasa */
         .badge-date {
-          background: none !important;
           border: none !important;
-          color: #000 !important;
-          font-size: 9pt !important;
           padding: 0 !important;
+          font-size: 9pt !important;
         }
         .badge-date i { display: none !important; }
       }
