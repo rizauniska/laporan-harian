@@ -95,7 +95,7 @@ declare(strict_types=1);
                   <i class="fas fa-user-md"></i>
                 </div>
                 <div>
-                  <div class="text-muted small fw-semibold">Total JM dr. Zainuddin</div>
+                  <div class="text-muted small fw-semibold">Total JM dr. Zainuddin <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size:.65rem">Bersih</span></div>
                   <div class="fs-5 fw-bold text-info" id="statTotal">Rp 0</div>
                 </div>
               </div>
@@ -145,6 +145,11 @@ declare(strict_types=1);
             <!-- Tabulator Table (Screen) -->
             <div id="zainuddinTable" class="no-print"></div>
 
+            <!-- Keterangan bersih -->
+            <div class="mt-2 mb-1 no-print">
+              <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Nilai JM dr. Zainuddin di atas sudah dikurangi JM dr. Ali Program (nilai bersih).</small>
+            </div>
+
             <!-- Summary Screen -->
             <div class="mt-3 p-3 bg-light rounded border d-flex justify-content-between align-items-center no-print">
               <span class="fw-bold text-dark"><i class="bi bi-sigma me-1"></i>JUMLAH TOTAL: <span class="text-info fs-5" id="sumTotalText">Rp 0</span></span>
@@ -156,7 +161,7 @@ declare(strict_types=1);
                 <tr class="text-center">
                   <th style="width:60px">No</th>
                   <th class="text-start">Tanggal</th>
-                  <th class="text-end" style="width:220px">JM dr. Zainuddin</th>
+                  <th class="text-end" style="width:220px">JM dr. Zainuddin (Bersih)</th>
                 </tr>
               </thead>
               <tbody id="tbodyPrint"></tbody>
@@ -236,7 +241,7 @@ function initTabulator() {
         formatter: cell => `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(cell.getValue())}</span>`
       },
       {
-        title: 'JM dr. Zainuddin',
+        title: 'JM dr. Zainuddin (Bersih)',
         field: 'jm_dr_zainuddin',
         headerHozAlign: 'right',
         hozAlign: 'right',
@@ -343,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     printView.innerHTML = `
       <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:14px;">
-        <h1 style="font-size:15pt; font-weight:800; text-transform:uppercase; margin:0 0 4px 0; color:#000;">Laporan Jasa Medis dr. Zainuddin</h1>
+        <h1 style="font-size:15pt; font-weight:800; text-transform:uppercase; margin:0 0 4px 0; color:#000;">Laporan Jasa Medis dr. Zainuddin (Bersih)</h1>
         <p style="font-size:9pt; color:#333; margin:0;">${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
       </div>
       <table style="width:100%; border-collapse:collapse; font-size:9.5pt; font-family:Arial, sans-serif; border:1.5px solid #000;">
@@ -351,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr style="border-bottom:2.5px solid #000; background:#f0f0f0;">
             <th style="border:1px solid #000; padding:6px; text-align:center; width:50px; color:#000;">No</th>
             <th style="border:1px solid #000; padding:6px; text-align:left; color:#000;">Tanggal Laporan</th>
-            <th style="border:1px solid #000; padding:6px; text-align:right; width:220px; color:#000;">JM dr. Zainuddin</th>
+            <th style="border:1px solid #000; padding:6px; text-align:right; width:220px; color:#000;">JM dr. Zainuddin (Bersih)</th>
           </tr>
         </thead>
         <tbody>

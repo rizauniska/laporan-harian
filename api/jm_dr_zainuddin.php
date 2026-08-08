@@ -1,5 +1,6 @@
 <?php
 // api/jm_dr_zainuddin.php – API Data JM dr. Zainuddin per tanggal
+// JM dr. Zainuddin yang ditampilkan = jm_dr_zainuddin - jm_dr_ali_program
 require_once __DIR__ . '/../bootstrap.php';
 
 use App\Config\Database;
@@ -14,7 +15,8 @@ try {
     $start = $_GET['start'] ?? '';
     $end   = $_GET['end']   ?? '';
 
-    $where = "(ka.jm_dr_zainuddin > 0 OR ka.jm_dokter > 0)";
+    // Tampilkan baris di mana hasil bersih (zainuddin - ali_program) > 0
+    $where  = "(COALESCE(ka.jm_dr_zainuddin, ka.jm_dokter, 0) - COALESCE(ka.jm_dr_ali_program, 0)) > 0";
     $params = [];
 
     if ($start) {
@@ -28,7 +30,10 @@ try {
 
     $sql = "
         SELECT l.tanggal,
-               COALESCE(ka.jm_dr_zainuddin, ka.jm_dokter, 0) AS jm_dr_zainuddin
+               COALESCE(ka.jm_dr_zainuddin, ka.jm_dokter, 0)      AS jm_dr_zainuddin_raw,
+               COALESCE(ka.jm_dr_ali_program, 0)                    AS jm_dr_ali_program,
+               (COALESCE(ka.jm_dr_zainuddin, ka.jm_dokter, 0)
+                - COALESCE(ka.jm_dr_ali_program, 0))               AS jm_dr_zainuddin
         FROM laporan l
         INNER JOIN kasir_apotek ka ON l.id = ka.laporan_id
         WHERE {$where}

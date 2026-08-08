@@ -145,7 +145,8 @@ function calcApotek() {
   });
 
   const totalExp = transfer + totalExpRandom;
-  const saldo = kasAwal + cash - totalExpRandom;
+  // JM dr. Ali Non-Program menambah saldo apotek
+  const saldo = kasAwal + cash + jmDrAliNonProgram - totalExpRandom;
 
   document.getElementById('a-totalExp').textContent = fmt(totalExp);
   const saldoEl = document.getElementById('a-saldo');
@@ -546,14 +547,16 @@ async function deleteLaporan() {
 function buildRekap() {
   // === Apotek ===
   const aKasAwal           = parseVal(document.getElementById('a-kasAwal').value);
-  const aResep            = parseVal(document.getElementById('a-resep').value);
-  const aBebas            = parseVal(document.getElementById('a-bebas').value);
-  const aJmDrZainuddin     = parseVal(document.getElementById('a-jmDrZainuddin').value);
+  const aResep             = parseVal(document.getElementById('a-resep').value);
+  const aBebas             = parseVal(document.getElementById('a-bebas').value);
+  const aJmDrZainuddinRaw  = parseVal(document.getElementById('a-jmDrZainuddin').value);
   const aJmDrAliProgram    = parseVal(document.getElementById('a-jmDrAliProgram').value);
   const aJmDrAliNonProgram = parseVal(document.getElementById('a-jmDrAliNonProgram').value);
   const aTransfer          = parseVal(document.getElementById('a-transfer').value);
   const aTotalPenj         = aResep + aBebas;
   const aCash              = Math.max(0, aTotalPenj - aTransfer);
+  // JM dr. Zainuddin bersih = input - JM Ali Program
+  const aJmDrZainuddinBersih = Math.max(0, aJmDrZainuddinRaw - aJmDrAliProgram);
 
   let aExpRandom = 0;
   const aExpRows = [];
@@ -565,7 +568,8 @@ function buildRekap() {
   });
 
   const aTotalExp = aTransfer + aExpRandom;
-  const aSaldo = aKasAwal + aCash - aExpRandom;
+  // JM dr. Ali Non-Program menambah saldo apotek
+  const aSaldo = aKasAwal + aCash + aJmDrAliNonProgram - aExpRandom;
 
   let aHtml = `
     <tr class="tr-section"><td colspan="2">Pemasukan</td></tr>
@@ -573,9 +577,10 @@ function buildRekap() {
     <tr><td>Penjualan Pakai Resep</td><td class="text-end">${fmt(aResep)}</td></tr>
     <tr><td>Penjualan Bebas</td><td class="text-end">${fmt(aBebas)}</td></tr>
     <tr class="tr-total"><td>Total Penjualan Apotek</td><td class="text-end text-success">${fmt(aTotalPenj)}</td></tr>
-    ${aJmDrZainuddin > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Zai</td><td class="text-end text-info-emphasis">${fmt(aJmDrZainuddin)}</td></tr>` : ''}
-    ${aJmDrAliProgram > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Ali (Program)</td><td class="text-end text-info-emphasis">${fmt(aJmDrAliProgram)}</td></tr>` : ''}
-    ${aJmDrAliNonProgram > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Ali (non Program)</td><td class="text-end text-info-emphasis">${fmt(aJmDrAliNonProgram)}</td></tr>` : ''}
+    ${aJmDrZainuddinRaw > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Zai (input)</td><td class="text-end text-info-emphasis">${fmt(aJmDrZainuddinRaw)}</td></tr>` : ''}
+    ${aJmDrAliProgram > 0 ? `<tr class="table-light text-muted"><td>&nbsp;&nbsp;− JM dr. Ali (Program)</td><td class="text-end text-warning-emphasis">−${fmt(aJmDrAliProgram)}</td></tr>` : ''}
+    ${aJmDrZainuddinBersih > 0 ? `<tr class="table-light fw-semibold"><td>↳ JM dr. Zai (bersih)</td><td class="text-end text-info">${fmt(aJmDrZainuddinBersih)}</td></tr>` : ''}
+    ${aJmDrAliNonProgram > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Ali (non Program)</td><td class="text-end text-success-emphasis">${fmt(aJmDrAliNonProgram)}</td></tr>` : ''}
     <tr class="table-light text-muted"><td>↳ Bayar Cash</td><td class="text-end">${fmt(aCash)}</td></tr>
     <tr class="table-light text-muted"><td>↳ Bayar Transfer</td><td class="text-end">${fmt(aTransfer)}</td></tr>
     <tr class="tr-section"><td colspan="2">Pengeluaran</td></tr>
@@ -661,14 +666,16 @@ function buildPrintView() {
   const now     = new Date().toLocaleString('id-ID');
 
   const aKasAwal           = parseVal(document.getElementById('a-kasAwal').value);
-  const aResep            = parseVal(document.getElementById('a-resep').value);
-  const aBebas            = parseVal(document.getElementById('a-bebas').value);
-  const aJmDrZainuddin     = parseVal(document.getElementById('a-jmDrZainuddin').value);
+  const aResep             = parseVal(document.getElementById('a-resep').value);
+  const aBebas             = parseVal(document.getElementById('a-bebas').value);
+  const aJmDrZainuddinRaw  = parseVal(document.getElementById('a-jmDrZainuddin').value);
   const aJmDrAliProgram    = parseVal(document.getElementById('a-jmDrAliProgram').value);
   const aJmDrAliNonProgram = parseVal(document.getElementById('a-jmDrAliNonProgram').value);
   const aTransfer          = parseVal(document.getElementById('a-transfer').value);
   const aTotalPenj         = aResep + aBebas;
   const aCash              = Math.max(0, aTotalPenj - aTransfer);
+  // JM dr. Zainuddin bersih = input - JM Ali Program
+  const aJmDrZainuddinBersih = Math.max(0, aJmDrZainuddinRaw - aJmDrAliProgram);
 
   let aExpRandom = 0;
   const aExpRows = [];
@@ -679,7 +686,8 @@ function buildPrintView() {
     aExpRows.push({ ket, nom });
   });
   const aTotalExp = aTransfer + aExpRandom;
-  const aSaldo = aKasAwal + aCash - aExpRandom;
+  // JM dr. Ali Non-Program menambah saldo apotek
+  const aSaldo = aKasAwal + aCash + aJmDrAliNonProgram - aExpRandom;
 
   const pKasAwal    = parseVal(document.getElementById('p-kasAwal').value);
   const pFisio120C  = parseInt(document.getElementById('p-fisio120').value, 10) || 0;
@@ -724,9 +732,10 @@ function buildPrintView() {
         ${tr('', 'Penjualan Pakai Resep', fmt(aResep))}
         ${tr('', 'Penjualan Bebas', fmt(aBebas))}
         ${tr('tr-total', 'Total Penjualan', fmt(aTotalPenj))}
-        ${aJmDrZainuddin > 0 ? tr('tr-sub', '↳ JM dr. Zai', fmt(aJmDrZainuddin)) : ''}
-        ${aJmDrAliProgram > 0 ? tr('tr-sub', '↳ JM dr. Ali (Program)', fmt(aJmDrAliProgram)) : ''}
-        ${aJmDrAliNonProgram > 0 ? tr('tr-sub', '↳ JM dr. Ali (non Program)', fmt(aJmDrAliNonProgram)) : ''}
+        ${aJmDrZainuddinRaw > 0 ? tr('tr-sub', '↳ JM dr. Zai (input)', fmt(aJmDrZainuddinRaw)) : ''}
+        ${aJmDrAliProgram > 0 ? tr('tr-sub', '&nbsp;&nbsp;− JM dr. Ali Program', fmt(aJmDrAliProgram)) : ''}
+        ${aJmDrZainuddinBersih > 0 ? tr('tr-sub', '↳ JM dr. Zai (bersih)', fmt(aJmDrZainuddinBersih)) : ''}
+        ${aJmDrAliNonProgram > 0 ? tr('tr-sub', '↳ JM dr. Ali (non Program) [+]', fmt(aJmDrAliNonProgram)) : ''}
         ${tr('tr-sub', '↳ Bayar Cash', fmt(aCash))}
         ${tr('tr-sub', '↳ Bayar Transfer', fmt(aTransfer))}
         ${tr('tr-section', 'PENGELUARAN', '')}
@@ -824,7 +833,8 @@ function exportExcel() {
     aExpRows.push([ket, nom]);
   });
   const aTotalExp = aTransfer + aExpRandom;
-  const aSaldo    = aKasAwal + aCash - aExpRandom;
+  // JM dr. Ali Non-Program menambah saldo apotek
+  const aSaldo    = aKasAwal + aCash + aJmDrAliNonProgram - aExpRandom;
 
   // Data Pendaftaran
   const pKasAwal    = parseVal(document.getElementById('p-kasAwal').value);

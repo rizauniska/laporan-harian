@@ -258,7 +258,7 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
                     <div class="saldo-callout p-3 mt-3 d-flex justify-content-between align-items-center rounded">
                       <div>
                         <div class="small opacity-75">Saldo Akhir Kasir Apotek</div>
-                        <div class="saldo-formula">= Kas Awal + Cash − Pengeluaran Random</div>
+                        <div class="saldo-formula">= Kas Awal + Cash + JM dr. Ali Non-Program &minus; Pengeluaran</div>
                       </div>
                       <div class="saldo-val" id="a-saldo">Rp 0</div>
                     </div>
