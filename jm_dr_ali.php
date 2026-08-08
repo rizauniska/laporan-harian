@@ -293,7 +293,7 @@ async function loadData(start = '', end = '') {
     const count   = json.count  || 0;
 
     document.getElementById('statTotal').textContent    = fmt(total);
-    document.getElementById('statProg').textContent     = fmt(totProg);
+    document.getElementById('statProgram').textContent   = fmt(totProg);
     document.getElementById('statNonProg').textContent  = fmt(totNon);
     document.getElementById('sumProgText').textContent  = fmt(totProg);
     document.getElementById('sumNonText').textContent   = fmt(totNon);
