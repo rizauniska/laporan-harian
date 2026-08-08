@@ -139,6 +139,21 @@ function calcApotek() {
   document.getElementById('a-totalPenjualan').textContent = fmt(totalPenjualan);
   document.getElementById('a-expTransfer').textContent = fmt(transfer);
 
+  // Live preview JM Bersih: tampilkan/sembunyikan sesuai nilai JM Ali Program
+  const jmDrZainuddinBersih = Math.max(0, jmDrZainuddin - jmDrAliProgram);
+  const bersihWrapper = document.getElementById('a-jmZainuddinBersihWrapper');
+  const bersihEl      = document.getElementById('a-jmZainuddinBersih');
+  if (bersihWrapper && bersihEl) {
+    if (jmDrAliProgram > 0) {
+      bersihWrapper.classList.remove('d-none');
+      bersihEl.textContent = fmt(jmDrZainuddinBersih);
+      // Tandai merah jika JM Ali Program > JM Zainuddin (hasil negatif)
+      bersihEl.style.color = jmDrZainuddinBersih <= 0 ? '#dc3545' : '';
+    } else {
+      bersihWrapper.classList.add('d-none');
+    }
+  }
+
   let totalExpRandom = 0;
   document.querySelectorAll('#a-expList .exp-nominal').forEach(inp => {
     totalExpRandom += parseVal(inp.value);

@@ -156,6 +156,11 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
                                   <input type="text" class="form-control text-end-input fw-semibold" id="a-jmDrZainuddin"
                                     placeholder="0" autocomplete="off" oninput="fmtCur(this); markDirty()">
                                 </div>
+                                <!-- Live preview JM Bersih (hanya muncul jika ada JM Ali Program) -->
+                                <div id="a-jmZainuddinBersihWrapper" class="d-none mt-1 px-2 py-1 rounded d-flex justify-content-between align-items-center" style="background:#e8f4fd; border:1px solid #bee3f8;">
+                                  <span class="small text-info-emphasis"><i class="bi bi-arrow-return-right me-1"></i>JM Bersih (setelah dikurangi Ali Program)</span>
+                                  <span class="small fw-bold text-info" id="a-jmZainuddinBersih">Rp 0</span>
+                                </div>
                               </div>
 
                               <!-- Khusus Jum'at: JM dr. Ali -->
