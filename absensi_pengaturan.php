@@ -417,8 +417,17 @@ async function loadPeriods() {
       pageLength: 10,
       order: [[2, 'desc']],
       columnDefs: [
-        { targets: [0, 2, 3, 4, 5], className: 'text-center' },
-        { targets: [0, 5], orderable: false }
+        {
+          targets: 0,
+          className: 'text-center',
+          orderable: false,
+          searchable: false,
+          render: function (data, type, row, meta) {
+            return meta.row + meta.settings._iDisplayStart + 1;
+          }
+        },
+        { targets: [2, 3, 4, 5], className: 'text-center' },
+        { targets: [5], orderable: false }
       ],
       responsive: true
     });

@@ -298,8 +298,17 @@ function renderTable(data) {
     pageLength: 25,
     order: [[1, 'asc']],
     columnDefs: [
-      { targets: [0, 3, 4, 5, 6, 7, 8, 9, 10], className: 'text-center' },
-      { targets: [0, 10], orderable: false }
+      {
+        targets: 0,
+        className: 'text-center',
+        orderable: false,
+        searchable: false,
+        render: function (data, type, row, meta) {
+          return meta.row + meta.settings._iDisplayStart + 1;
+        }
+      },
+      { targets: [3, 4, 5, 6, 7, 8, 9, 10], className: 'text-center' },
+      { targets: [10], orderable: false }
     ],
     responsive: true
   });

@@ -374,7 +374,16 @@ function filterAndRender() {
     pageLength: 10,
     order: [[1, 'desc']],
     columnDefs: [
-      { targets: [0, 8], className: 'text-center', orderable: false },
+      {
+        targets: 0,
+        className: 'text-center',
+        orderable: false,
+        searchable: false,
+        render: function (data, type, row, meta) {
+          return meta.row + meta.settings._iDisplayStart + 1;
+        }
+      },
+      { targets: [8], className: 'text-center', orderable: false },
       { targets: [2, 3, 4, 5, 6, 7], className: 'text-end' }
     ],
     responsive: true

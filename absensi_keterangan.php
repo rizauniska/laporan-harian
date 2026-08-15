@@ -234,8 +234,17 @@ function renderNotesTable(data) {
     pageLength: 25,
     order: [[4, 'desc']],
     columnDefs: [
-      { targets: [0, 3, 4, 5, 6, 8], className: 'text-center' },
-      { targets: [0, 8], orderable: false }
+      {
+        targets: 0,
+        className: 'text-center',
+        orderable: false,
+        searchable: false,
+        render: function (data, type, row, meta) {
+          return meta.row + meta.settings._iDisplayStart + 1;
+        }
+      },
+      { targets: [3, 4, 5, 6, 8], className: 'text-center' },
+      { targets: [8], orderable: false }
     ],
     responsive: true
   });

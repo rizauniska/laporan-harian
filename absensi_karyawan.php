@@ -263,8 +263,17 @@ function renderEmployeesTable(data) {
     pageLength: 25,
     order: [[1, 'asc']],
     columnDefs: [
-      { targets: [0, 3, 4, 5, 6], className: 'text-center' },
-      { targets: [0, 6], orderable: false }
+      {
+        targets: 0,
+        className: 'text-center',
+        orderable: false,
+        searchable: false,
+        render: function (data, type, row, meta) {
+          return meta.row + meta.settings._iDisplayStart + 1;
+        }
+      },
+      { targets: [3, 4, 5, 6], className: 'text-center' },
+      { targets: [6], orderable: false }
     ],
     responsive: true
   });

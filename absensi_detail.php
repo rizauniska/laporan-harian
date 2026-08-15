@@ -300,10 +300,18 @@ function renderDetail(data) {
     data: tableData,
     language: dtIndonesian,
     pageLength: 35,
-    order: [[0, 'asc']],
     columnDefs: [
-      { targets: [0, 2, 3, 5, 6], className: 'text-center' },
-      { targets: [0, 3, 5, 6], orderable: false }
+      {
+        targets: 0,
+        className: 'text-center',
+        orderable: false,
+        searchable: false,
+        render: function (data, type, row, meta) {
+          return meta.row + meta.settings._iDisplayStart + 1;
+        }
+      },
+      { targets: [2, 3, 5, 6], className: 'text-center' },
+      { targets: [3, 5, 6], orderable: false }
     ],
     responsive: true
   });

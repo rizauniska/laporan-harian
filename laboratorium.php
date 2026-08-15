@@ -287,7 +287,16 @@ async function loadData(start = '', end = '') {
       pageLength: 15,
       order: [[1, 'desc']],
       columnDefs: [
-        { targets: [0, 2], className: 'text-center', orderable: false },
+        {
+          targets: 0,
+          className: 'text-center',
+          orderable: false,
+          searchable: false,
+          render: function (data, type, row, meta) {
+            return meta.row + meta.settings._iDisplayStart + 1;
+          }
+        },
+        { targets: [2], className: 'text-center', orderable: false },
         { targets: [3], className: 'text-end' }
       ],
       responsive: true

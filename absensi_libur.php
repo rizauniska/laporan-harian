@@ -188,8 +188,17 @@ function renderHolidaysTable(data) {
     pageLength: 20,
     order: [[1, 'asc']],
     columnDefs: [
-      { targets: [0, 2, 5, 6], className: 'text-center' },
-      { targets: [0, 6], orderable: false }
+      {
+        targets: 0,
+        className: 'text-center',
+        orderable: false,
+        searchable: false,
+        render: function (data, type, row, meta) {
+          return meta.row + meta.settings._iDisplayStart + 1;
+        }
+      },
+      { targets: [2, 5, 6], className: 'text-center' },
+      { targets: [6], orderable: false }
     ],
     responsive: true
   });
