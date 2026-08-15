@@ -5,15 +5,15 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
   <div class="sidebar-brand">
-    <a href="index.php" class="brand-link d-flex align-items-center gap-2 px-3 py-3">
-      <i class="bi bi-clipboard2-data text-primary fs-4"></i>
-      <span class="brand-text fw-bold fs-6">Kasir Laporan</span>
+    <a href="index.php" class="brand-link d-flex align-items-center gap-2 px-3 py-3 text-decoration-none">
+      <i class="bi bi-hospital text-primary fs-4"></i>
+      <span class="brand-text fw-bold fs-6">Klinik Millennia</span>
     </a>
   </div>
   <div class="sidebar-wrapper">
     <nav class="mt-2">
       <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
-        <li class="nav-header">MENU UTAMA</li>
+        <li class="nav-header">MENU UTAMA KASIR</li>
         <li class="nav-item">
           <a href="index.php" class="nav-link <?= $currentPage === 'index.php' ? 'active' : '' ?>">
             <i class="nav-icon bi bi-speedometer2"></i>
@@ -26,7 +26,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <p>Input / Edit Laporan</p>
           </a>
         </li>
-        <li class="nav-header">LAPORAN DETAIL</li>
+        <li class="nav-header">LAPORAN DETAIL KASIR</li>
         <li class="nav-item">
           <a href="jm_dr_zainuddin.php" class="nav-link <?= $currentPage === 'jm_dr_zainuddin.php' ? 'active' : '' ?>">
             <i class="nav-icon fas fa-user-md"></i>
@@ -61,6 +61,38 @@ $currentPage = basename($_SERVER['PHP_SELF']);
           <a href="parkir.php" class="nav-link <?= $currentPage === 'parkir.php' ? 'active' : '' ?>">
             <i class="nav-icon fas fa-parking"></i>
             <p>Pendapatan Parkir</p>
+          </a>
+        </li>
+
+        <li class="nav-header">ABSENSI KARYAWAN</li>
+        <li class="nav-item">
+          <a href="absensi_rekap.php" class="nav-link <?= in_array($currentPage, ['absensi_rekap.php', 'absensi_detail.php'], true) ? 'active' : '' ?>">
+            <i class="nav-icon bi bi-calendar2-check"></i>
+            <p>Rekap Absensi</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="absensi_karyawan.php" class="nav-link <?= $currentPage === 'absensi_karyawan.php' ? 'active' : '' ?>">
+            <i class="nav-icon bi bi-people"></i>
+            <p>Data Karyawan</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="absensi_keterangan.php" class="nav-link <?= $currentPage === 'absensi_keterangan.php' ? 'active' : '' ?>">
+            <i class="nav-icon bi bi-journal-medical"></i>
+            <p>Keterangan Sakit/Izin</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="absensi_libur.php" class="nav-link <?= $currentPage === 'absensi_libur.php' ? 'active' : '' ?>">
+            <i class="nav-icon bi bi-calendar-event"></i>
+            <p>Hari Libur Nasional</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="absensi_pengaturan.php" class="nav-link <?= $currentPage === 'absensi_pengaturan.php' ? 'active' : '' ?>">
+            <i class="nav-icon bi bi-sliders"></i>
+            <p>Pengaturan Jadwal</p>
           </a>
         </li>
       </ul>
