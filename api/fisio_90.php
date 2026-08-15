@@ -1,5 +1,7 @@
 <?php
 // api/fisio_90.php – API Data Pasien Fisioterapi Rp 90.000 per tanggal
+declare(strict_types=1);
+
 require_once __DIR__ . '/../bootstrap.php';
 
 use App\Config\Database;
@@ -28,8 +30,9 @@ try {
 
     $sql = "
         SELECT l.tanggal,
-               kp.fisio_90_pasien,
-               (kp.fisio_90_pasien * 90000) AS total_nominal
+               COALESCE(kp.fisio_90_pasien, 0) AS fisio_90_pasien,
+               (COALESCE(kp.fisio_90_pasien, 0) * 90000) AS total_nominal,
+               (COALESCE(kp.fisio_90_pasien, 0) * 90000) AS fisio_90_total
         FROM laporan l
         INNER JOIN kasir_pendaftaran kp ON l.id = kp.laporan_id
         WHERE {$where}
@@ -40,13 +43,14 @@ try {
     $stmt->execute($params);
     $rows = $stmt->fetchAll();
 
-    $totalPasien  = array_sum(array_column($rows, 'fisio_90_pasien'));
-    $totalNominal = array_sum(array_column($rows, 'total_nominal'));
+    $totalPasien  = (int) array_sum(array_column($rows, 'fisio_90_pasien'));
+    $totalNominal = (float) array_sum(array_column($rows, 'total_nominal'));
 
     jsonResponse([
         'success'       => true,
         'data'          => $rows,
         'total_pasien'  => $totalPasien,
+        'total_nominal' => $totalNominal,
         'total'         => $totalNominal,
         'count'         => count($rows)
     ]);

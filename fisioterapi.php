@@ -274,14 +274,14 @@ async function loadData(start = '', end = '') {
     if (!json.success) throw new Error(json.error || 'Error');
 
     const rows       = json.data || [];
-    const grandTotal = json.total || 0;
-    const totP120    = json.total_pasien_120 || 0;
-    const totNom120  = json.total_nominal_120 || 0;
-    const totP90     = json.total_pasien_90 || 0;
-    const totNom90   = json.total_nominal_90 || 0;
-    const count      = json.count || 0;
+    const grandTotal = Number(json.total_pendapatan !== undefined ? json.total_pendapatan : (json.total !== undefined ? json.total : 0)) || 0;
+    const totP120    = Number(json.tot_fisio120_p !== undefined ? json.tot_fisio120_p : (json.total_pasien_120 !== undefined ? json.total_pasien_120 : 0)) || 0;
+    const totNom120  = Number(json.tot_fisio120_n !== undefined ? json.tot_fisio120_n : (json.total_nominal_120 !== undefined ? json.total_nominal_120 : 0)) || 0;
+    const totP90     = Number(json.tot_fisio90_p !== undefined ? json.tot_fisio90_p : (json.total_pasien_90 !== undefined ? json.total_pasien_90 : 0)) || 0;
+    const totNom90   = Number(json.tot_fisio90_n !== undefined ? json.tot_fisio90_n : (json.total_nominal_90 !== undefined ? json.total_nominal_90 : 0)) || 0;
+    const count      = Number(json.count) || 0;
 
-    document.getElementById('statTotal').textContent    = fmt(grandTotal);
+    document.getElementById('statTotal').textContent     = fmt(grandTotal);
     document.getElementById('statPasien120').textContent = totP120 + ' Pasien';
     document.getElementById('statPasien90').textContent  = totP90 + ' Pasien';
     document.getElementById('statCount').textContent     = count + ' Hari';
@@ -299,15 +299,21 @@ async function loadData(start = '', end = '') {
 
     document.getElementById('badgePeriode').textContent = periodeText;
 
-    const tableData = rows.map((r, idx) => [
-      idx + 1,
-      `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
-      `<span class="badge bg-primary">${r.fisio_120_pasien}</span>`,
-      `<span class="text-primary fw-semibold">${fmt(r.fisio_120_total)}</span>`,
-      `<span class="badge bg-warning text-dark">${r.fisio_90_pasien}</span>`,
-      `<span class="text-warning text-dark fw-semibold">${fmt(r.fisio_90_total)}</span>`,
-      `<span class="text-danger fw-bold">${fmt(r.total_fisioterapi)}</span>`
-    ]);
+    const tableData = rows.map((r, idx) => {
+      const nom120 = Number(r.fisio_120_total !== undefined ? r.fisio_120_total : (r.fisio_120_pasien * 120000)) || 0;
+      const nom90  = Number(r.fisio_90_total !== undefined ? r.fisio_90_total : (r.fisio_90_pasien * 90000)) || 0;
+      const totFisio = Number(r.total_fisioterapi !== undefined ? r.total_fisioterapi : (r.total_fisio !== undefined ? r.total_fisio : (nom120 + nom90))) || 0;
+
+      return [
+        idx + 1,
+        `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
+        `<span class="badge bg-primary">${r.fisio_120_pasien}</span>`,
+        `<span class="text-primary fw-semibold">${fmt(nom120)}</span>`,
+        `<span class="badge bg-warning text-dark">${r.fisio_90_pasien}</span>`,
+        `<span class="text-warning text-dark fw-semibold">${fmt(nom90)}</span>`,
+        `<span class="text-danger fw-bold">${fmt(totFisio)}</span>`
+      ];
+    });
 
     if (dtTable) {
       dtTable.destroy();
@@ -327,17 +333,23 @@ async function loadData(start = '', end = '') {
     });
 
     // Print markup
-    tbodyPrint.innerHTML = rows.map((r, idx) => `
-      <tr>
-        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
-        <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${r.fisio_120_pasien}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; color:#000;">${fmt(r.fisio_120_total)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${r.fisio_90_pasien}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; color:#000;">${fmt(r.fisio_90_total)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(r.total_fisioterapi)}</td>
-      </tr>
-    `).join('');
+    tbodyPrint.innerHTML = rows.map((r, idx) => {
+      const nom120 = Number(r.fisio_120_total !== undefined ? r.fisio_120_total : (r.fisio_120_pasien * 120000)) || 0;
+      const nom90  = Number(r.fisio_90_total !== undefined ? r.fisio_90_total : (r.fisio_90_pasien * 90000)) || 0;
+      const totFisio = Number(r.total_fisioterapi !== undefined ? r.total_fisioterapi : (r.total_fisio !== undefined ? r.total_fisio : (nom120 + nom90))) || 0;
+
+      return `
+        <tr>
+          <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
+          <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
+          <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${r.fisio_120_pasien}</td>
+          <td style="border:1px solid #000; padding:6px; text-align:right; color:#000;">${fmt(nom120)}</td>
+          <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${r.fisio_90_pasien}</td>
+          <td style="border:1px solid #000; padding:6px; text-align:right; color:#000;">${fmt(nom90)}</td>
+          <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(totFisio)}</td>
+        </tr>
+      `;
+    }).join('');
 
     tfootPrint.innerHTML = `
       <tr style="border-top:2.5px solid #000;">
@@ -358,7 +370,7 @@ function applyPreset(preset) {
   const now = new Date(), pad = n => String(n).padStart(2, '0'), fd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
   let start = '', end = '';
   if (preset === 'this_month') { start = fd(new Date(now.getFullYear(), now.getMonth(), 1)); end = fd(now); }
-  else if (preset === 'last_month') { start = fd(new Date(now.getFullYear(), now.getMonth()-1, 1)); end = fd(new Date(now.getFullYear(), now.getMonth(), 0)); }
+  else if (preset === 'last_month') { start = fd(new Date(now.getFullYear(), now.getMonth()-1, 1)); end = fd(now); }
   else if (preset === 'this_year') { start = fd(new Date(now.getFullYear(), 0, 1)); end = fd(now); }
 
   document.getElementById('filterStart').value = start;

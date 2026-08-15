@@ -254,9 +254,9 @@ async function loadData(start = '', end = '') {
     if (!json.success) throw new Error(json.error || 'Error');
 
     const rows       = json.data || [];
-    const totalP90   = json.total_pasien || 0;
-    const totalNom   = json.total_nominal || 0;
-    const count      = json.count || 0;
+    const totalP90   = Number(json.total_pasien) || 0;
+    const totalNom   = Number(json.total_nominal !== undefined ? json.total_nominal : (json.total !== undefined ? json.total : 0)) || 0;
+    const count      = Number(json.count) || 0;
 
     document.getElementById('statTotalPasien').textContent  = totalP90 + ' Pasien';
     document.getElementById('statTotalNominal').textContent = fmt(totalNom);
@@ -272,12 +272,15 @@ async function loadData(start = '', end = '') {
 
     document.getElementById('badgePeriode').textContent = periodeText;
 
-    const tableData = rows.map((r, idx) => [
-      idx + 1,
-      `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
-      `<span class="badge bg-warning text-dark fs-6">${r.fisio_90_pasien} Pasien</span>`,
-      `<span class="fw-bold text-success">${fmt(r.fisio_90_total)}</span>`
-    ]);
+    const tableData = rows.map((r, idx) => {
+      const rowNom = Number(r.total_nominal !== undefined ? r.total_nominal : (r.fisio_90_total !== undefined ? r.fisio_90_total : (r.fisio_90_pasien * 90000))) || 0;
+      return [
+        idx + 1,
+        `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
+        `<span class="badge bg-warning text-dark fs-6">${r.fisio_90_pasien} Pasien</span>`,
+        `<span class="fw-bold text-success">${fmt(rowNom)}</span>`
+      ];
+    });
 
     if (dtTable) {
       dtTable.destroy();
@@ -297,14 +300,17 @@ async function loadData(start = '', end = '') {
     });
 
     // Print markup
-    tbodyPrint.innerHTML = rows.map((r, idx) => `
-      <tr>
-        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
-        <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${r.fisio_90_pasien} Pasien</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(r.fisio_90_total)}</td>
-      </tr>
-    `).join('');
+    tbodyPrint.innerHTML = rows.map((r, idx) => {
+      const rowNom = Number(r.total_nominal !== undefined ? r.total_nominal : (r.fisio_90_total !== undefined ? r.fisio_90_total : (r.fisio_90_pasien * 90000))) || 0;
+      return `
+        <tr>
+          <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
+          <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
+          <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${r.fisio_90_pasien} Pasien</td>
+          <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(rowNom)}</td>
+        </tr>
+      `;
+    }).join('');
 
     tfootPrint.innerHTML = `
       <tr style="border-top:2.5px solid #000;">
