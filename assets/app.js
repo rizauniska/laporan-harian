@@ -1079,6 +1079,109 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) modal.hide();
   });
 
+  // ── Modal Rincian Transfer ──────────────────────────────────────
+  let transferItemCounter = 0;
+
+  /** Hitung ulang total di dalam modal dan update tampilan */
+  function calcTransferModalTotal() {
+    let total = 0;
+    document.querySelectorAll('#transferItemList .transfer-item-nominal').forEach(inp => {
+      total += parseVal(inp.value);
+    });
+    document.getElementById('transferModalTotal').textContent = fmt(total);
+  }
+
+  /** Tambah satu baris input transfer di dalam modal */
+  function addTransferItem(keterangan = '', nominal = '', focusInput = false) {
+    const id = ++transferItemCounter;
+    const list = document.getElementById('transferItemList');
+    const div = document.createElement('div');
+    div.className = 'input-group input-group-sm mb-2 transfer-item';
+    div.dataset.id = id;
+    div.innerHTML = `
+      <input type="text" class="form-control transfer-item-ket"
+        placeholder="Keterangan (opsional, mis: BRI, Mandiri...)"
+        value="${escHtml(keterangan)}"
+        style="max-width: 45%;">
+      <span class="input-group-text">Rp</span>
+      <input type="text" class="form-control text-end transfer-item-nominal"
+        placeholder="0"
+        value="${escHtml(nominal ? formatNum(nominal) : '')}"
+        autocomplete="off">
+      <button class="btn btn-outline-danger" type="button" title="Hapus baris">
+        <i class="bi bi-x"></i>
+      </button>
+    `;
+
+    // Format angka saat mengetik & update total
+    const nominalInp = div.querySelector('.transfer-item-nominal');
+    nominalInp.addEventListener('input', function () {
+      fmtCur(this);
+      calcTransferModalTotal();
+    });
+
+    // Enter → buat baris baru
+    nominalInp.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addTransferItem('', '', true);
+      }
+    });
+
+    // Hapus baris
+    div.querySelector('button').addEventListener('click', () => {
+      div.remove();
+      calcTransferModalTotal();
+    });
+
+    list.appendChild(div);
+    if (focusInput) {
+      requestAnimationFrame(() => nominalInp.focus());
+    }
+    calcTransferModalTotal();
+  }
+
+  // Tombol buka modal Transfer
+  document.getElementById('btnOpenTransferModal').addEventListener('click', () => {
+    const list = document.getElementById('transferItemList');
+
+    // Jika modal kosong, pre-fill dari nilai Transfer yang sudah ada di form
+    if (list.children.length === 0) {
+      const existingVal = parseVal(document.getElementById('a-transfer').value);
+      addTransferItem('', existingVal > 0 ? existingVal : '', true);
+    }
+
+    const modal = new bootstrap.Modal(document.getElementById('modalTransfer'));
+    modal.show();
+  });
+
+  // Tombol Tambah Baris di dalam modal
+  document.getElementById('btnAddTransferItem').addEventListener('click', () => {
+    addTransferItem('', '', true);
+  });
+
+  // Tombol Selesai — jumlahkan semua dan terapkan ke field Transfer
+  document.getElementById('btnTransferDone').addEventListener('click', () => {
+    let total = 0;
+    document.querySelectorAll('#transferItemList .transfer-item-nominal').forEach(inp => {
+      total += parseVal(inp.value);
+    });
+
+    // Set ke field Transfer utama dan trigger kalkulasi
+    const transferInput = document.getElementById('a-transfer');
+    transferInput.value = total > 0 ? formatNum(total) : '';
+    calcAll();
+    markDirty();
+
+    // Tutup modal
+    const modalEl = document.getElementById('modalTransfer');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+
+    showToast(`✅ Total transfer Rp ${formatNum(total)} diterapkan ke form`, 'text-bg-success');
+  });
+  // ── Akhir Modal Rincian Transfer ───────────────────────────────
+
   // Load tanggal dari URL parameter jika ada, jika tidak pakai nilai default inputTanggal
   const urlParams = new URLSearchParams(window.location.search);
   const paramTanggal = urlParams.get('tanggal');

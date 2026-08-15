@@ -206,6 +206,10 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
                                   <span class="input-group-text">Rp</span>
                                   <input type="text" class="form-control text-end-input transfer-badge" id="a-transfer"
                                     placeholder="0" autocomplete="off" oninput="fmtCur(this); markDirty()">
+                                  <button class="btn btn-outline-primary btn-sm" type="button" id="btnOpenTransferModal"
+                                    title="Isi rincian transferan satu per satu">
+                                    <i class="bi bi-list-ul"></i> Rinci
+                                  </button>
                                 </div>
                               </div>
                               <div class="col-6">
@@ -523,6 +527,52 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
             <i class="bi bi-trash3 me-1"></i> Hapus
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL RINCIAN TRANSFER ============ -->
+  <div class="modal fade" id="modalTransfer" tabindex="-1" aria-labelledby="modalTransferLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content">
+
+        <div class="modal-header bg-primary text-white py-2">
+          <h5 class="modal-title fw-bold" id="modalTransferLabel">
+            <i class="bi bi-arrow-left-right me-2"></i>Rincian Transfer Apotek
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body p-3">
+          <p class="small text-muted mb-3">
+            <i class="bi bi-info-circle me-1"></i>Isi nominal transferan satu per satu. Total otomatis dijumlahkan ke field <strong>Transfer</strong>.
+          </p>
+
+          <!-- Daftar Item Transfer -->
+          <div id="transferItemList" class="mb-3"></div>
+
+          <!-- Tombol Tambah -->
+          <button class="btn btn-outline-secondary btn-sm w-100" id="btnAddTransferItem" type="button">
+            <i class="bi bi-plus-circle me-1"></i> Tambah Baris Transfer
+          </button>
+
+          <!-- Total -->
+          <div class="mt-3 p-2 rounded d-flex justify-content-between align-items-center fw-bold"
+               style="background:#e8f4fd; border:1px solid #bee3f8;">
+            <span class="text-primary"><i class="bi bi-sigma me-1"></i>Total Transfer</span>
+            <span class="fs-5 text-primary" id="transferModalTotal">Rp 0</span>
+          </div>
+        </div>
+
+        <div class="modal-footer py-2">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg me-1"></i>Batal
+          </button>
+          <button type="button" class="btn btn-primary fw-semibold" id="btnTransferDone">
+            <i class="bi bi-check2-circle me-1"></i>Selesai — Terapkan ke Form
+          </button>
+        </div>
+
       </div>
     </div>
   </div>
