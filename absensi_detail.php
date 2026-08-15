@@ -1,5 +1,5 @@
 <?php
-// absensi_detail.php – Detail Kalender Audit Kehadiran per Karyawan | AdminLTE 4
+// absensi_detail.php – Detail Kalender Audit Kehadiran per Karyawan dengan DataTables | AdminLTE 4
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
@@ -13,11 +13,13 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
+  <!-- DataTables Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="assets/style.css">
 
   <style>
     @media print {
-      .no-print, .app-sidebar, .app-header, .app-footer, .btn, .breadcrumb {
+      .no-print, .app-sidebar, .app-header, .app-footer, .btn, .breadcrumb, .dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate {
         display: none !important;
       }
       .app-wrapper { margin: 0 !important; padding: 0 !important; }
@@ -129,11 +131,11 @@ declare(strict_types=1);
         <!-- TABLE CALENDAR AUDIT -->
         <div class="card shadow-sm">
           <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
-            <h6 class="card-title mb-0 fw-bold"><i class="bi bi-calendar-check text-primary me-2"></i>Rincian Jadwal & Hitungan per Tanggal</h6>
+            <h6 class="card-title mb-0 fw-bold"><i class="bi bi-calendar-check text-primary me-2"></i>Rincian Jadwal & Hitungan per Tanggal (DataTables)</h6>
             <span class="badge bg-secondary" id="badgePeriodDetail">Periode: -</span>
           </div>
-          <div class="card-body p-0 table-responsive">
-            <table class="table table-bordered align-middle mb-0">
+          <div class="card-body p-3 table-responsive">
+            <table class="table table-striped table-bordered table-hover align-middle mb-0" id="tableDetail" style="width:100%">
               <thead class="table-light">
                 <tr>
                   <th class="text-center" width="45">No</th>
@@ -145,13 +147,7 @@ declare(strict_types=1);
                   <th class="text-center" width="90">Hitung</th>
                 </tr>
               </thead>
-              <tbody id="tbodyDetail">
-                <tr>
-                  <td colspan="7" class="text-center py-4 text-muted">
-                    <div class="spinner-border spinner-border-sm text-primary me-1" role="status"></div> Memuat rincian kalender...
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="tbodyDetail"></tbody>
             </table>
           </div>
         </div>
@@ -164,10 +160,15 @@ declare(strict_types=1);
   <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </div>
 
+<!-- SCRIPTS: jQuery & DataTables Bootstrap 5 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+let dtDetail = null;
 const urlParams = new URLSearchParams(window.location.search);
 const employeeId = parseInt(urlParams.get('employee_id') || '0');
 const periodId   = parseInt(urlParams.get('period_id') || '0');
@@ -179,21 +180,35 @@ if (employeeId <= 0) {
 
 const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
+const dtIndonesian = {
+  search: "Cari:",
+  lengthMenu: "Tampilkan _MENU_ data",
+  info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+  infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+  infoFiltered: "(disaring dari _MAX_ total data)",
+  zeroRecords: "Tidak ada data yang cocok",
+  paginate: {
+    first: "Pertama",
+    last: "Terakhir",
+    next: "Berikutnya",
+    previous: "Sebelumnya"
+  }
+};
+
 async function loadDetail() {
-  const tbody = document.getElementById('tbodyDetail');
   try {
     const url = `api/absensi_detail.php?employee_id=${employeeId}&period_id=${periodId}`;
     const res = await fetch(url);
     const json = await res.json();
 
     if (!json.success) {
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">${json.message}</td></tr>`;
+      alert(json.message);
       return;
     }
 
     renderDetail(json);
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Gagal memuat rincian: ${err.message}</td></tr>`;
+    alert('Gagal memuat rincian: ' + err.message);
   }
 }
 
@@ -221,19 +236,11 @@ function renderDetail(data) {
   document.getElementById('cardKurang').textContent = summary.total_deduction;
   document.getElementById('cardMasuk').textContent = summary.total_masuk;
 
-  let html = '';
-  schedule.forEach((day, idx) => {
+  const tableData = schedule.map((day, idx) => {
     const d = new Date(day.date + 'T00:00:00');
     const dayName = dayNames[d.getDay()];
     const isWorkDay = day.should_work;
     const hasNote = Boolean(day.note);
-
-    let rowClass = '';
-    if (!isWorkDay) {
-      rowClass = 'bg-light text-muted';
-    } else if (hasNote) {
-      rowClass = 'table-warning';
-    }
 
     // Schedule status badge
     let statusBadge = '';
@@ -273,20 +280,33 @@ function renderDetail(data) {
       ? '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i>1</span>'
       : '<span class="text-muted fw-semibold">0</span>';
 
-    html += `
-      <tr class="${rowClass}">
-        <td class="text-center">${idx + 1}</td>
-        <td class="fw-semibold">${day.date}</td>
-        <td>${dayName}</td>
-        <td class="text-center">${statusBadge}</td>
-        <td><small class="${isWorkDay ? 'fw-semibold text-dark' : 'text-muted'}">${day.reason}</small></td>
-        <td class="text-center">${noteBadge}</td>
-        <td class="text-center">${countedBadge}</td>
-      </tr>
-    `;
+    return [
+      idx + 1,
+      `<strong>${day.date}</strong>`,
+      dayName,
+      statusBadge,
+      `<small class="${isWorkDay ? 'fw-semibold text-dark' : 'text-muted'}">${day.reason}</small>`,
+      noteBadge,
+      countedBadge
+    ];
   });
 
-  document.getElementById('tbodyDetail').innerHTML = html;
+  if (dtDetail) {
+    dtDetail.destroy();
+    $('#tbodyDetail').empty();
+  }
+
+  dtDetail = $('#tableDetail').DataTable({
+    data: tableData,
+    language: dtIndonesian,
+    pageLength: 35,
+    order: [[0, 'asc']],
+    columnDefs: [
+      { targets: [0, 2, 3, 5, 6], className: 'text-center' },
+      { targets: [0, 3, 5, 6], orderable: false }
+    ],
+    responsive: true
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,5 +1,5 @@
 <?php
-// parkir.php – Halaman Detail Pendapatan Parkir dengan Tabulator JS | AdminLTE 4
+// parkir.php – Detail Pendapatan Parkir dengan DataTables | AdminLTE 4
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
@@ -14,9 +14,8 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
-  <!-- Tabulator JS (Bootstrap 5 Theme) -->
-  <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_bootstrap5.min.css">
-  <!-- Custom Main CSS -->
+  <!-- DataTables Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -28,17 +27,13 @@ declare(strict_types=1);
   <!-- SIDEBAR -->
   <?php require_once __DIR__ . '/includes/sidebar.php'; ?>
 
-  <!-- ============ MAIN CONTENT ============ -->
+  <!-- MAIN CONTENT -->
   <main class="app-main">
-
-    <!-- Content Header -->
     <div class="app-content-header">
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h3 class="mb-0 fw-bold">
-              <i class="fas fa-parking text-secondary me-2"></i>Pendapatan Parkir
-            </h3>
+            <h3 class="mb-0 fw-bold"><i class="fas fa-parking text-secondary me-2"></i>Pendapatan Parkir</h3>
           </div>
           <div class="col-sm-6 text-end">
             <ol class="breadcrumb float-sm-end mb-0">
@@ -50,43 +45,28 @@ declare(strict_types=1);
       </div>
     </div>
 
-    <!-- Content Body -->
     <div class="app-content">
       <div class="container-fluid">
 
-        <!-- ===== FILTER AREA ===== -->
+        <!-- FILTER -->
         <div class="card shadow-sm mb-4 filter-area no-print">
           <div class="card-header py-2">
-            <h6 class="card-title mb-0 fw-bold">
-              <i class="bi bi-funnel-fill text-primary me-2"></i>Filter Periode
-            </h6>
-            <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                <i class="bi bi-dash-lg"></i>
-              </button>
-            </div>
+            <h6 class="card-title mb-0 fw-bold"><i class="bi bi-funnel-fill text-primary me-2"></i>Filter Periode</h6>
+            <div class="card-tools"><button type="button" class="btn btn-tool" data-lte-toggle="card-collapse"><i class="bi bi-dash-lg"></i></button></div>
           </div>
           <div class="card-body py-3">
             <div class="row g-2 align-items-end">
               <div class="col-md-3 col-sm-6">
-                <label class="form-label small fw-semibold text-muted mb-1" for="filterStart">
-                  <i class="bi bi-calendar-event me-1 text-primary"></i> Tanggal Mulai
-                </label>
+                <label class="form-label small fw-semibold text-muted mb-1" for="filterStart"><i class="bi bi-calendar-event me-1 text-primary"></i> Tanggal Mulai</label>
                 <input type="date" class="form-control form-control-sm" id="filterStart">
               </div>
               <div class="col-md-3 col-sm-6">
-                <label class="form-label small fw-semibold text-muted mb-1" for="filterEnd">
-                  <i class="bi bi-calendar-event me-1 text-primary"></i> Tanggal Selesai
-                </label>
+                <label class="form-label small fw-semibold text-muted mb-1" for="filterEnd"><i class="bi bi-calendar-event me-1 text-primary"></i> Tanggal Selesai</label>
                 <input type="date" class="form-control form-control-sm" id="filterEnd">
               </div>
               <div class="col-md-3 col-sm-6 d-flex gap-2">
-                <button class="btn btn-primary btn-sm fw-semibold w-100" id="btnFilter">
-                  <i class="bi bi-funnel-fill me-1"></i> Terapkan
-                </button>
-                <button class="btn btn-outline-secondary btn-sm" id="btnReset" title="Reset">
-                  <i class="bi bi-arrow-counterclockwise"></i>
-                </button>
+                <button class="btn btn-primary btn-sm fw-semibold w-100" id="btnFilter"><i class="bi bi-funnel-fill me-1"></i> Terapkan</button>
+                <button class="btn btn-outline-secondary btn-sm" id="btnReset" title="Reset"><i class="bi bi-arrow-counterclockwise"></i></button>
               </div>
               <div class="col-md-3 col-sm-6">
                 <div class="dropdown">
@@ -106,14 +86,12 @@ declare(strict_types=1);
           </div>
         </div>
 
-        <!-- ===== STAT CARDS ===== -->
+        <!-- STAT CARDS -->
         <div class="row g-3 mb-4 stat-cards no-print">
           <div class="col-md-4 col-sm-6">
             <div class="card shadow-sm stat-card total-card p-3">
               <div class="d-flex align-items-center gap-3">
-                <div class="stat-icon-wrapper stat-icon-blue">
-                  <i class="fas fa-parking"></i>
-                </div>
+                <div class="stat-icon-wrapper stat-icon-blue"><i class="fas fa-parking"></i></div>
                 <div>
                   <div class="text-muted small fw-semibold">Total Pendapatan Parkir</div>
                   <div class="fs-5 fw-bold text-primary" id="statTotal">Rp 0</div>
@@ -124,9 +102,7 @@ declare(strict_types=1);
           <div class="col-md-4 col-sm-6">
             <div class="card shadow-sm stat-card count-card p-3">
               <div class="d-flex align-items-center gap-3">
-                <div class="stat-icon-wrapper stat-icon-green">
-                  <i class="bi bi-calendar-check"></i>
-                </div>
+                <div class="stat-icon-wrapper stat-icon-green"><i class="bi bi-calendar-check"></i></div>
                 <div>
                   <div class="text-muted small fw-semibold">Jumlah Hari</div>
                   <div class="fs-5 fw-bold text-success" id="statCount">0 Hari</div>
@@ -137,9 +113,7 @@ declare(strict_types=1);
           <div class="col-md-4 col-sm-6">
             <div class="card shadow-sm stat-card stat-card-warning p-3">
               <div class="d-flex align-items-center gap-3">
-                <div class="stat-icon-wrapper stat-icon-yellow">
-                  <i class="bi bi-graph-up"></i>
-                </div>
+                <div class="stat-icon-wrapper stat-icon-yellow"><i class="bi bi-graph-up"></i></div>
                 <div>
                   <div class="text-muted small fw-semibold">Rata-rata / Hari</div>
                   <div class="fs-5 fw-bold text-warning" id="statAvg">Rp 0</div>
@@ -149,40 +123,46 @@ declare(strict_types=1);
           </div>
         </div>
 
-        <!-- ===== TABEL LAPORAN ===== -->
+        <!-- TABLE CARD -->
         <div class="card shadow-sm">
           <div class="card-header d-flex align-items-center justify-content-between py-3">
-            <h5 class="card-title mb-0 fw-bold">
-              <i class="bi bi-table text-primary me-2"></i>Rincian Pendapatan Parkir
-            </h5>
-            <span class="badge bg-secondary no-print" id="badgePeriode">Semua Data</span>
+            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-table text-primary me-2"></i>Rincian Pendapatan Parkir (DataTables)</h5>
+            <div class="d-flex align-items-center gap-2 no-print">
+              <span class="badge bg-secondary" id="badgePeriode">Semua Data</span>
+              <button class="btn btn-primary btn-sm fw-semibold" id="btnCetak"><i class="bi bi-printer me-1"></i> Cetak PDF</button>
+            </div>
           </div>
           <div class="card-body p-3">
-
-            <!-- Print header (hanya tampil saat print) -->
-            <div class="print-header px-4 pt-3">
-              <h2>Laporan Pendapatan Parkir</h2>
-              <p id="printPeriode">Periode: Semua Data</p>
-              <p>Dicetak: <?= date('d/m/Y H:i') ?></p>
+            <div class="table-responsive no-print">
+              <table class="table table-striped table-bordered table-hover align-middle mb-0" id="parkirTable" style="width:100%">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-center" width="50">No</th>
+                    <th>Tanggal Laporan</th>
+                    <th class="text-end" width="240">Pendapatan Parkir</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyScreen"></tbody>
+                <tfoot class="table-light fw-bold">
+                  <tr>
+                    <td colspan="2" class="text-end">JUMLAH TOTAL:</td>
+                    <td class="text-end text-primary fs-6" id="sumTotalText">Rp 0</td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
-
-            <!-- Tabulator Table Container (Screen) -->
-            <div id="parkirTable" class="no-print"></div>
 
             <!-- Ringkasan Total & Gaji Upik (Screen) -->
             <div class="mt-3 p-3 bg-light rounded border d-flex flex-wrap justify-content-between align-items-center no-print">
               <div>
-                <span class="fw-bold text-dark me-3">
-                  <i class="bi bi-sigma me-1"></i>JUMLAH TOTAL: <span class="text-primary fs-5" id="sumTotalText">Rp 0</span>
-                </span>
-                <span class="fw-semibold text-success ms-sm-3">
-                  <i class="bi bi-person-fill me-1"></i>Gaji Upik (60%): <span class="fs-5" id="gajiUpikText">Rp 0</span>
+                <span class="fw-semibold text-success">
+                  <i class="bi bi-person-fill me-1"></i>Gaji Upik (60%): <span class="fs-5 fw-bold text-success" id="gajiUpikText">Rp 0</span>
                 </span>
               </div>
             </div>
 
-            <!-- Printable HTML Table (Hanya tampil saat Cetak PDF) -->
-            <table class="table table-bordered align-middle mb-0 print-only-table" id="tabelParkirPrint">
+            <!-- Print table -->
+            <table class="table table-bordered align-middle mb-0 print-only-table" id="tabelParkirPrint" style="display:none;">
               <thead>
                 <tr class="text-center">
                   <th style="width:60px">No</th>
@@ -193,39 +173,51 @@ declare(strict_types=1);
               <tbody id="tbodyParkirPrint"></tbody>
               <tfoot id="tfootParkirPrint"></tfoot>
             </table>
-
           </div>
         </div>
 
-      </div><!-- /container-fluid -->
-    </div><!-- /app-content -->
+      </div>
+    </div>
   </main>
 
   <!-- FOOTER -->
   <?php require_once __DIR__ . '/includes/footer.php'; ?>
+</div>
 
-</div><!-- /app-wrapper -->
-
-<!-- PRINT VIEW (Hanya aktif saat cetak PDF) -->
 <div id="print-view"></div>
 
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+  <div id="appToast" class="toast align-items-center text-white bg-dark border-0" role="alert">
+    <div class="d-flex"><div class="toast-body" id="toastMsg"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
-<script src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
 'use strict';
+let dtTable = null;
 
-let tabulatorTable = null;
+const dtIndonesian = {
+  search: "Cari:",
+  lengthMenu: "Tampilkan _MENU_ data",
+  info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+  infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+  infoFiltered: "(disaring dari _MAX_ total data)",
+  zeroRecords: "Tidak ada data yang cocok",
+  paginate: { first: "Pertama", last: "Terakhir", next: "Berikutnya", previous: "Sebelumnya" }
+};
 
-// ---------------------------------------------------------------
-// UTILS
-// ---------------------------------------------------------------
 function fmt(num) {
   const n = Math.round(Number(num) || 0);
   return 'Rp\u00A0' + n.toLocaleString('id-ID');
 }
-
 function fmtTglIndo(dateStr) {
   if (!dateStr) return '-';
   try {
@@ -234,8 +226,6 @@ function fmtTglIndo(dateStr) {
     });
   } catch (_) { return dateStr; }
 }
-
-/** Format tanggal untuk cetak: tanpa hari, tanpa ikon (misal: 27 Juli 2026) */
 function fmtTglPrint(dateStr) {
   if (!dateStr) return '-';
   try {
@@ -244,7 +234,6 @@ function fmtTglPrint(dateStr) {
     });
   } catch (_) { return dateStr; }
 }
-
 function showToast(msg, bgClass = 'bg-dark') {
   const toastEl = document.getElementById('appToast');
   toastEl.className = `toast align-items-center text-white ${bgClass} border-0`;
@@ -252,50 +241,9 @@ function showToast(msg, bgClass = 'bg-dark') {
   new bootstrap.Toast(toastEl).show();
 }
 
-// ---------------------------------------------------------------
-// INIT TABULATOR
-// ---------------------------------------------------------------
-function initTabulator() {
-  tabulatorTable = new Tabulator('#parkirTable', {
-    data: [],
-    layout: 'fitColumns',
-    responsiveLayout: 'collapse',
-    pagination: 'local',
-    paginationSize: 15,
-    paginationSizeSelector: [10, 15, 30, 50, 100],
-    movableColumns: true,
-    placeholder: 'Tidak ada data pendapatan parkir',
-    columns: [
-      { title: 'No', formatter: 'rownum', width: 65, headerHozAlign: 'center', hozAlign: 'center', headerSort: false },
-      {
-        title: 'Tanggal Laporan',
-        field: 'tanggal',
-        headerHozAlign: 'left',
-        formatter: function(cell) {
-          const val = cell.getValue();
-          return `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date">
-                    <i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(val)}
-                  </span>`;
-        }
-      },
-      {
-        title: 'Pendapatan Parkir',
-        field: 'parkir',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => `<span class="fw-bold text-success">${fmt(cell.getValue())}</span>`
-      }
-    ]
-  });
-}
-
-// ---------------------------------------------------------------
-// LOAD DATA
-// ---------------------------------------------------------------
 async function loadData(start = '', end = '') {
   const tbodyPrint = document.getElementById('tbodyParkirPrint');
   const tfootPrint = document.getElementById('tfootParkirPrint');
-
   tbodyPrint.innerHTML = '';
   tfootPrint.innerHTML = '';
 
@@ -311,44 +259,54 @@ async function loadData(start = '', end = '') {
 
     if (!json.success) throw new Error(json.error || 'Error');
 
-    const rows  = json.data  || [];
-    const total = json.total || 0;
-    const count = json.count || 0;
-    const avg   = count > 0 ? total / count : 0;
-    const gajiUpik = Math.round(total * 0.60);
+    const rows      = json.data  || [];
+    const total     = json.total || 0;
+    const count     = json.count || 0;
+    const avg       = count > 0 ? total / count : 0;
+    const gajiUpik  = total * 0.6;
 
-    // Update stat cards & summary elements
     document.getElementById('statTotal').textContent   = fmt(total);
     document.getElementById('statCount').textContent   = count + ' Hari';
     document.getElementById('statAvg').textContent     = fmt(avg);
     document.getElementById('sumTotalText').textContent = fmt(total);
     document.getElementById('gajiUpikText').textContent = fmt(gajiUpik);
 
-    // Update badge & print periode
     let periodeText = 'Semua Data';
     if (start && end)   periodeText = start + ' s/d ' + end;
     else if (start)     periodeText = 'Mulai ' + start;
     else if (end)       periodeText = 'Sampai ' + end;
 
     document.getElementById('badgePeriode').textContent = periodeText;
-    document.getElementById('printPeriode').textContent = 'Periode: ' + periodeText;
 
-    // Load data into Tabulator Table
-    if (tabulatorTable) {
-      tabulatorTable.setData(rows);
+    const tableData = rows.map((r, idx) => [
+      idx + 1,
+      `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
+      `<span class="fw-bold text-primary">${fmt(r.parkir)}</span>`
+    ]);
+
+    if (dtTable) {
+      dtTable.destroy();
+      $('#tbodyScreen').empty();
     }
 
-    // Render print table HTML
-    if (rows.length === 0) {
-      tbodyPrint.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">Tidak ada data pendapatan parkir</td></tr>`;
-      return;
-    }
+    dtTable = $('#parkirTable').DataTable({
+      data: tableData,
+      language: dtIndonesian,
+      pageLength: 15,
+      order: [[1, 'desc']],
+      columnDefs: [
+        { targets: [0], className: 'text-center', orderable: false },
+        { targets: [2], className: 'text-end' }
+      ],
+      responsive: true
+    });
 
-    tbodyPrint.innerHTML = rows.map((row, idx) => `
+    // Print markup
+    tbodyPrint.innerHTML = rows.map((r, idx) => `
       <tr>
         <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
-        <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(row.tanggal)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(row.parkir)}</td>
+        <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(r.parkir)}</td>
       </tr>
     `).join('');
 
@@ -357,94 +315,65 @@ async function loadData(start = '', end = '') {
         <td colspan="2" style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">JUMLAH TOTAL (${count} hari)</td>
         <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(total)}</td>
       </tr>
-      <tr style="border-top:1.5px dashed #000;">
-        <td colspan="2" style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">Gaji Upik (60% × Total)</td>
+      <tr>
+        <td colspan="2" style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">GAJI UPIK (60%)</td>
         <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(gajiUpik)}</td>
       </tr>
     `;
-
   } catch (err) {
     showToast('❌ Gagal memuat data: ' + err.message, 'bg-danger');
   }
 }
 
-// ---------------------------------------------------------------
-// DATE PRESET HELPER
-// ---------------------------------------------------------------
 function applyPreset(preset) {
-  const now = new Date();
-  const pad = n => String(n).padStart(2, '0');
-  const fd  = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-
+  const now = new Date(), pad = n => String(n).padStart(2, '0'), fd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
   let start = '', end = '';
-  if (preset === 'this_month') {
-    start = fd(new Date(now.getFullYear(), now.getMonth(), 1));
-    end   = fd(now);
-  } else if (preset === 'last_month') {
-    start = fd(new Date(now.getFullYear(), now.getMonth()-1, 1));
-    end   = fd(new Date(now.getFullYear(), now.getMonth(), 0));
-  } else if (preset === 'this_year') {
-    start = fd(new Date(now.getFullYear(), 0, 1));
-    end   = fd(now);
-  }
+  if (preset === 'this_month') { start = fd(new Date(now.getFullYear(), now.getMonth(), 1)); end = fd(now); }
+  else if (preset === 'last_month') { start = fd(new Date(now.getFullYear(), now.getMonth()-1, 1)); end = fd(new Date(now.getFullYear(), now.getMonth(), 0)); }
+  else if (preset === 'this_year') { start = fd(new Date(now.getFullYear(), 0, 1)); end = fd(now); }
 
   document.getElementById('filterStart').value = start;
   document.getElementById('filterEnd').value   = end;
   loadData(start, end);
 }
 
-// ---------------------------------------------------------------
-// EVENT LISTENERS
-// ---------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
-  initTabulator();
   loadData();
 
   document.getElementById('btnFilter').addEventListener('click', () => {
-    const start = document.getElementById('filterStart').value;
-    const end   = document.getElementById('filterEnd').value;
-    loadData(start, end);
+    loadData(document.getElementById('filterStart').value, document.getElementById('filterEnd').value);
   });
-
   document.getElementById('btnReset').addEventListener('click', () => {
     document.getElementById('filterStart').value = '';
     document.getElementById('filterEnd').value   = '';
     loadData();
     showToast('Filter berhasil di-reset', 'bg-secondary');
   });
-
   document.querySelectorAll('.preset').forEach(el => {
-    el.addEventListener('click', function(e) {
-      e.preventDefault();
-      applyPreset(this.dataset.preset);
-    });
+    el.addEventListener('click', function(e) { e.preventDefault(); applyPreset(this.dataset.preset); });
   });
 
   document.getElementById('btnCetak').addEventListener('click', () => {
     const printView = document.getElementById('print-view');
-    const periodeText = document.getElementById('printPeriode').textContent;
+    const periodeText = document.getElementById('badgePeriode').textContent;
     const tbodyHTML = document.getElementById('tbodyParkirPrint').innerHTML;
     const tfootHTML = document.getElementById('tfootParkirPrint').innerHTML;
 
     printView.innerHTML = `
       <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:14px;">
         <h1 style="font-size:15pt; font-weight:800; text-transform:uppercase; margin:0 0 4px 0; color:#000;">Laporan Pendapatan Parkir</h1>
-        <p style="font-size:9pt; color:#333; margin:0;">${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
+        <p style="font-size:9pt; color:#333; margin:0;">Periode: ${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
       </div>
       <table style="width:100%; border-collapse:collapse; font-size:9.5pt; font-family:Arial, sans-serif; border:1.5px solid #000;">
         <thead>
           <tr style="border-bottom:2.5px solid #000; background:#f0f0f0;">
             <th style="border:1px solid #000; padding:6px; text-align:center; width:50px; color:#000;">No</th>
-            <th style="border:1px solid #000; padding:6px; text-align:left; color:#000;">Tanggal</th>
+            <th style="border:1px solid #000; padding:6px; text-align:left; color:#000;">Tanggal Laporan</th>
             <th style="border:1px solid #000; padding:6px; text-align:right; width:220px; color:#000;">Pendapatan Parkir</th>
           </tr>
         </thead>
-        <tbody>
-          ${tbodyHTML}
-        </tbody>
-        <tfoot>
-          ${tfootHTML}
-        </tfoot>
+        <tbody>${tbodyHTML}</tbody>
+        <tfoot>${tfootHTML}</tfoot>
       </table>
       <div style="margin-top:16px; padding-top:6px; border-top:1px dashed #666; font-size:8pt; color:#555; text-align:center;">
         Dokumen ini digenerate otomatis oleh Sistem Laporan Keuangan Kasir PHP/MySQL

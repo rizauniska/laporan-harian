@@ -1,5 +1,5 @@
 <?php
-// absensi_rekap.php – Rekapitulasi Absensi & Hari Kerja Karyawan | AdminLTE 4
+// absensi_rekap.php – Rekapitulasi Absensi & Hari Kerja dengan DataTables | AdminLTE 4
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
@@ -14,11 +14,13 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
+  <!-- DataTables Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="assets/style.css">
 
   <style>
     @media print {
-      .no-print, .app-sidebar, .app-header, .app-footer, .filter-area, .btn, .breadcrumb {
+      .no-print, .app-sidebar, .app-header, .app-footer, .filter-area, .btn, .breadcrumb, .dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate {
         display: none !important;
       }
       .app-wrapper { margin: 0 !important; padding: 0 !important; }
@@ -132,18 +134,18 @@ declare(strict_types=1);
         <!-- MAIN TABLE CARD -->
         <div class="card shadow-sm">
           <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
-            <h6 class="card-title mb-0 fw-bold"><i class="bi bi-table text-primary me-2"></i>Tabel Rekapitulasi Kehadiran</h6>
+            <h6 class="card-title mb-0 fw-bold"><i class="bi bi-table text-primary me-2"></i>Tabel Rekapitulasi Kehadiran (DataTables)</h6>
             <span class="badge bg-primary" id="badgePeriodName">Periode: -</span>
           </div>
-          <div class="card-body p-0 table-responsive">
-            <table class="table table-bordered table-hover align-middle mb-0" id="tableRekap">
+          <div class="card-body p-3 table-responsive">
+            <table class="table table-striped table-bordered table-hover align-middle mb-0" id="tableRekap" style="width:100%">
               <thead class="table-light">
                 <tr>
                   <th class="text-center" width="45">No</th>
                   <th>Nama Karyawan</th>
                   <th>Pekerjaan / Jabatan</th>
                   <th class="text-center" width="130">Jenis Jadwal</th>
-                  <th class="text-center" width="110">Hari Kerja Seharusnya</th>
+                  <th class="text-center" width="110">Hari Kerja</th>
                   <th class="text-center text-danger" width="70">Sakit</th>
                   <th class="text-center text-warning" width="70">Izin</th>
                   <th class="text-center text-primary" width="70">Cuti</th>
@@ -152,16 +154,10 @@ declare(strict_types=1);
                   <th class="text-center no-print" width="90">Aksi</th>
                 </tr>
               </thead>
-              <tbody id="tbodyRekap">
+              <tbody id="tbodyRekap"></tbody>
+              <tfoot class="table-light fw-bold" id="tfootRekap">
                 <tr>
-                  <td colspan="11" class="text-center py-4 text-muted">
-                    <div class="spinner-border spinner-border-sm text-primary me-1" role="status"></div> Memuat data perhitungan absensi...
-                  </td>
-                </tr>
-              </tbody>
-              <tfoot class="table-light fw-bold" id="tfootRekap" style="display: none;">
-                <tr>
-                  <td colspan="4" class="text-end">TOTAL KESELURUHAN</td>
+                  <td colspan="4" class="text-end">TOTAL KESELURUHAN:</td>
                   <td class="text-center" id="sumKerja">0</td>
                   <td class="text-center text-danger" id="sumSakit">0</td>
                   <td class="text-center text-warning" id="sumIzin">0</td>
@@ -183,25 +179,41 @@ declare(strict_types=1);
   <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </div>
 
+<!-- SCRIPTS: jQuery & DataTables Bootstrap 5 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
 <script>
+let dtRekap = null;
 let currentData = null;
 
-async function loadRekap(periodId = 0) {
-  const tbody = document.getElementById('tbodyRekap');
-  const tfoot = document.getElementById('tfootRekap');
-  tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary me-1"></div> Menghitung jadwal & absensi...</td></tr>`;
+const dtIndonesian = {
+  search: "Cari:",
+  lengthMenu: "Tampilkan _MENU_ data",
+  info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+  infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+  infoFiltered: "(disaring dari _MAX_ total data)",
+  zeroRecords: "Tidak ada data yang cocok",
+  paginate: {
+    first: "Pertama",
+    last: "Terakhir",
+    next: "Berikutnya",
+    previous: "Sebelumnya"
+  }
+};
 
+async function loadRekap(periodId = 0) {
   try {
     const url = periodId > 0 ? `api/absensi_rekap.php?period_id=${periodId}` : 'api/absensi_rekap.php';
     const res = await fetch(url);
     const json = await res.json();
 
     if (!json.success) {
-      tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-danger">${json.message}</td></tr>`;
+      alert(json.message);
       return;
     }
 
@@ -209,7 +221,7 @@ async function loadRekap(periodId = 0) {
     renderPeriodsDropdown(json.periods, json.period.id);
     renderTable(json);
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-danger">Gagal memuat data: ${err.message}</td></tr>`;
+    alert('Gagal memuat data: ' + err.message);
   }
 }
 
@@ -226,8 +238,6 @@ function renderPeriodsDropdown(periods, activeId) {
 }
 
 function renderTable(data) {
-  const tbody = document.getElementById('tbodyRekap');
-  const tfoot = document.getElementById('tfootRekap');
   const period = data.period;
   const summaries = data.summaries;
 
@@ -238,8 +248,7 @@ function renderTable(data) {
   let totKerja = 0, totSakit = 0, totIzin = 0, totCuti = 0, totKurang = 0, totMasuk = 0;
   let normalWorkingDays = 0;
 
-  let html = '';
-  summaries.forEach((s, idx) => {
+  const tableData = summaries.map((s, idx) => {
     const emp = s.employee;
     totKerja += s.working_days;
     totSakit += s.sakit;
@@ -263,33 +272,37 @@ function renderTable(data) {
     if (s.total_deduction > 0 && s.total_deduction <= 2) masukBadge = 'bg-warning text-dark';
     else if (s.total_deduction > 2) masukBadge = 'bg-danger';
 
-    html += `
-      <tr>
-        <td class="text-center">${idx + 1}</td>
-        <td class="fw-bold">${emp.name}</td>
-        <td>${emp.position}</td>
-        <td class="text-center">
-          <span class="badge ${badgeClass}">${emp.schedule_type}</span>
-        </td>
-        <td class="text-center fw-semibold">${s.working_days}</td>
-        <td class="text-center text-danger fw-semibold">${s.sakit > 0 ? s.sakit : '-'}</td>
-        <td class="text-center text-warning fw-semibold">${s.izin > 0 ? s.izin : '-'}</td>
-        <td class="text-center text-primary fw-semibold">${s.cuti > 0 ? s.cuti : '-'}</td>
-        <td class="text-center text-danger fw-bold">${s.total_deduction > 0 ? s.total_deduction : '0'}</td>
-        <td class="text-center">
-          <span class="badge ${masukBadge} px-2 py-1 fs-6">${s.total_masuk}</span>
-        </td>
-        <td class="text-center no-print">
-          <a href="absensi_detail.php?employee_id=${emp.id}&period_id=${period.id}" class="btn btn-xs btn-outline-primary py-1 px-2" title="Lihat Kalender Audit">
-            <i class="bi bi-eye"></i> Detail
-          </a>
-        </td>
-      </tr>
-    `;
+    return [
+      idx + 1,
+      `<strong>${emp.name}</strong>`,
+      emp.position,
+      `<span class="badge ${badgeClass}">${emp.schedule_type}</span>`,
+      s.working_days,
+      s.sakit > 0 ? `<span class="text-danger fw-bold">${s.sakit}</span>` : '-',
+      s.izin > 0 ? `<span class="text-warning fw-bold">${s.izin}</span>` : '-',
+      s.cuti > 0 ? `<span class="text-primary fw-bold">${s.cuti}</span>` : '-',
+      s.total_deduction > 0 ? `<span class="text-danger fw-bold">${s.total_deduction}</span>` : '0',
+      `<span class="badge ${masukBadge} px-2 py-1 fs-6">${s.total_masuk}</span>`,
+      `<a href="absensi_detail.php?employee_id=${emp.id}&period_id=${period.id}" class="btn btn-xs btn-outline-primary py-1 px-2 no-print" title="Lihat Kalender Audit"><i class="bi bi-eye"></i> Detail</a>`
+    ];
   });
 
-  tbody.innerHTML = html;
-  tfoot.style.display = '';
+  if (dtRekap) {
+    dtRekap.destroy();
+    $('#tbodyRekap').empty();
+  }
+
+  dtRekap = $('#tableRekap').DataTable({
+    data: tableData,
+    language: dtIndonesian,
+    pageLength: 25,
+    order: [[1, 'asc']],
+    columnDefs: [
+      { targets: [0, 3, 4, 5, 6, 7, 8, 9, 10], className: 'text-center' },
+      { targets: [0, 10], orderable: false }
+    ],
+    responsive: true
+  });
 
   document.getElementById('sumKerja').textContent = totKerja;
   document.getElementById('sumSakit').textContent = totSakit;

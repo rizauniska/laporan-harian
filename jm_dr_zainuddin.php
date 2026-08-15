@@ -1,5 +1,5 @@
 <?php
-// jm_dr_zainuddin.php – Detail JM dr. Zainuddin dengan Tabulator JS | AdminLTE 4
+// jm_dr_zainuddin.php – Detail JM dr. Zainuddin dengan DataTables | AdminLTE 4
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
@@ -14,7 +14,8 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_bootstrap5.min.css">
+  <!-- DataTables Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <!-- Custom Main CSS -->
   <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -91,11 +92,9 @@ declare(strict_types=1);
           <div class="col-md-4 col-sm-6">
             <div class="card shadow-sm stat-card total-card p-3">
               <div class="d-flex align-items-center gap-3">
-                <div class="stat-icon-wrapper stat-icon-cyan">
-                  <i class="fas fa-user-md"></i>
-                </div>
+                <div class="stat-icon-wrapper stat-icon-cyan"><i class="fas fa-user-md"></i></div>
                 <div>
-                  <div class="text-muted small fw-semibold">Total JM dr. Zainuddin <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size:.65rem">Bersih</span></div>
+                  <div class="text-muted small fw-semibold">Total JM dr. Zainuddin <span class="badge bg-info text-dark" style="font-size: 0.65rem;">Bersih</span></div>
                   <div class="fs-5 fw-bold text-info" id="statTotal">Rp 0</div>
                 </div>
               </div>
@@ -104,11 +103,9 @@ declare(strict_types=1);
           <div class="col-md-4 col-sm-6">
             <div class="card shadow-sm stat-card count-card p-3">
               <div class="d-flex align-items-center gap-3">
-                <div class="stat-icon-wrapper stat-icon-green">
-                  <i class="bi bi-calendar-check"></i>
-                </div>
+                <div class="stat-icon-wrapper stat-icon-green"><i class="bi bi-calendar-check"></i></div>
                 <div>
-                  <div class="text-muted small fw-semibold">Jumlah Hari</div>
+                  <div class="text-muted small fw-semibold">Jumlah Hari Ada Transaksi</div>
                   <div class="fs-5 fw-bold text-success" id="statCount">0 Hari</div>
                 </div>
               </div>
@@ -117,11 +114,9 @@ declare(strict_types=1);
           <div class="col-md-4 col-sm-6">
             <div class="card shadow-sm stat-card stat-card-warning p-3">
               <div class="d-flex align-items-center gap-3">
-                <div class="stat-icon-wrapper stat-icon-yellow">
-                  <i class="bi bi-graph-up"></i>
-                </div>
+                <div class="stat-icon-wrapper stat-icon-yellow"><i class="bi bi-graph-up"></i></div>
                 <div>
-                  <div class="text-muted small fw-semibold">Rata-rata / Hari</div>
+                  <div class="text-muted small fw-semibold">Rata-rata / Hari Aktif</div>
                   <div class="fs-5 fw-bold text-warning" id="statAvg">Rp 0</div>
                 </div>
               </div>
@@ -129,34 +124,42 @@ declare(strict_types=1);
           </div>
         </div>
 
-        <!-- TABEL LAPORAN -->
+        <!-- TABLE CARD -->
         <div class="card shadow-sm">
           <div class="card-header d-flex align-items-center justify-content-between py-3">
-            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-table text-primary me-2"></i>Rincian JM dr. Zainuddin</h5>
-            <span class="badge bg-secondary no-print" id="badgePeriode">Semua Data</span>
+            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-table text-primary me-2"></i>Rincian JM dr. Zainuddin (DataTables)</h5>
+            <div class="d-flex align-items-center gap-2 no-print">
+              <span class="badge bg-secondary" id="badgePeriode">Semua Data</span>
+              <button class="btn btn-primary btn-sm fw-semibold" id="btnCetak"><i class="bi bi-printer me-1"></i> Cetak PDF</button>
+            </div>
           </div>
           <div class="card-body p-3">
-            <div class="print-header px-4 pt-3">
-              <h2>Laporan JM dr. Zainuddin</h2>
-              <p id="printPeriode">Periode: Semua Data</p>
-              <p>Dicetak: <?= date('d/m/Y H:i') ?></p>
+            <div class="mt-1 mb-3 no-print">
+              <small class="text-muted"><i class="bi bi-info-circle me-1 text-info"></i>Nilai JM dr. Zainuddin di bawah sudah dikurangi JM dr. Ali Program (nilai bersih).</small>
             </div>
 
-            <!-- Tabulator Table (Screen) -->
-            <div id="zainuddinTable" class="no-print"></div>
-
-            <!-- Keterangan bersih -->
-            <div class="mt-2 mb-1 no-print">
-              <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Nilai JM dr. Zainuddin di atas sudah dikurangi JM dr. Ali Program (nilai bersih).</small>
+            <!-- DataTables Table (Screen) -->
+            <div class="table-responsive no-print">
+              <table class="table table-striped table-bordered table-hover align-middle mb-0" id="zainuddinTable" style="width:100%">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-center" width="50">No</th>
+                    <th>Tanggal Laporan</th>
+                    <th class="text-end" width="240">JM dr. Zainuddin (Bersih)</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyScreen"></tbody>
+                <tfoot class="table-light fw-bold">
+                  <tr>
+                    <td colspan="2" class="text-end">JUMLAH TOTAL:</td>
+                    <td class="text-end text-info fs-6" id="sumTotalText">Rp 0</td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
 
-            <!-- Summary Screen -->
-            <div class="mt-3 p-3 bg-light rounded border d-flex justify-content-between align-items-center no-print">
-              <span class="fw-bold text-dark"><i class="bi bi-sigma me-1"></i>JUMLAH TOTAL: <span class="text-info fs-5" id="sumTotalText">Rp 0</span></span>
-            </div>
-
-            <!-- Print Table (PDF) -->
-            <table class="table table-bordered align-middle mb-0 print-only-table" id="tabelPrint">
+            <!-- Hidden Container for PDF Print Table -->
+            <table class="table table-bordered align-middle mb-0 print-only-table" id="tabelPrint" style="display:none;">
               <thead>
                 <tr class="text-center">
                   <th style="width:60px">No</th>
@@ -178,22 +181,36 @@ declare(strict_types=1);
   <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </div>
 
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1100">
+<!-- PRINT VIEW -->
+<div id="print-view"></div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
   <div id="appToast" class="toast align-items-center text-white bg-dark border-0" role="alert">
     <div class="d-flex"><div class="toast-body" id="toastMsg"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
   </div>
 </div>
-<!-- PRINT VIEW (Hanya aktif saat cetak PDF) -->
-<div id="print-view"></div>
 
+<!-- SCRIPTS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
-<script src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
 'use strict';
+let dtTable = null;
 
-let tabulatorTable = null;
+const dtIndonesian = {
+  search: "Cari:",
+  lengthMenu: "Tampilkan _MENU_ data",
+  info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+  infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+  infoFiltered: "(disaring dari _MAX_ total data)",
+  zeroRecords: "Tidak ada data yang cocok",
+  paginate: { first: "Pertama", last: "Terakhir", next: "Berikutnya", previous: "Sebelumnya" }
+};
 
 function fmt(num) {
   const n = Math.round(Number(num) || 0);
@@ -222,40 +239,11 @@ function showToast(msg, bgClass = 'bg-dark') {
   new bootstrap.Toast(toastEl).show();
 }
 
-function initTabulator() {
-  tabulatorTable = new Tabulator('#zainuddinTable', {
-    data: [],
-    layout: 'fitColumns',
-    responsiveLayout: 'collapse',
-    pagination: 'local',
-    paginationSize: 15,
-    paginationSizeSelector: [10, 15, 30, 50, 100],
-    movableColumns: true,
-    placeholder: 'Tidak ada data',
-    columns: [
-      { title: 'No', formatter: 'rownum', width: 65, headerHozAlign: 'center', hozAlign: 'center', headerSort: false },
-      {
-        title: 'Tanggal Laporan',
-        field: 'tanggal',
-        headerHozAlign: 'left',
-        formatter: cell => `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(cell.getValue())}</span>`
-      },
-      {
-        title: 'JM dr. Zainuddin (Bersih)',
-        field: 'jm_dr_zainuddin',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => `<span class="fw-bold text-info">${fmt(cell.getValue())}</span>`
-      }
-    ]
-  });
-}
-
 async function loadData(start = '', end = '') {
-  const tbody = document.getElementById('tbodyPrint');
-  const tfoot = document.getElementById('tfootPrint');
-  tbody.innerHTML = '';
-  tfoot.innerHTML = '';
+  const tbodyPrint = document.getElementById('tbodyPrint');
+  const tfootPrint = document.getElementById('tfootPrint');
+  tbodyPrint.innerHTML = '';
+  tfootPrint.innerHTML = '';
 
   try {
     let url = 'api/jm_dr_zainuddin.php';
@@ -277,6 +265,7 @@ async function loadData(start = '', end = '') {
     document.getElementById('statTotal').textContent   = fmt(total);
     document.getElementById('statCount').textContent   = count + ' Hari';
     document.getElementById('statAvg').textContent     = fmt(avg);
+    document.getElementById('sumTotalText').textContent = fmt(total);
 
     let periodeText = 'Semua Data';
     if (start && end)   periodeText = start + ' s/d ' + end;
@@ -284,16 +273,32 @@ async function loadData(start = '', end = '') {
     else if (end)       periodeText = 'Sampai ' + end;
 
     document.getElementById('badgePeriode').textContent = periodeText;
-    document.getElementById('printPeriode').textContent = 'Periode: ' + periodeText;
 
-    if (tabulatorTable) tabulatorTable.setData(rows);
+    const tableData = rows.map((r, idx) => [
+      idx + 1,
+      `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
+      `<span class="fw-bold text-info">${fmt(r.jm_dr_zainuddin)}</span>`
+    ]);
 
-    if (rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-4">Tidak ada data</td></tr>`;
-      return;
+    if (dtTable) {
+      dtTable.destroy();
+      $('#tbodyScreen').empty();
     }
 
-    tbody.innerHTML = rows.map((r, idx) => `
+    dtTable = $('#zainuddinTable').DataTable({
+      data: tableData,
+      language: dtIndonesian,
+      pageLength: 15,
+      order: [[1, 'desc']],
+      columnDefs: [
+        { targets: [0], className: 'text-center', orderable: false },
+        { targets: [2], className: 'text-end' }
+      ],
+      responsive: true
+    });
+
+    // Print markup
+    tbodyPrint.innerHTML = rows.map((r, idx) => `
       <tr>
         <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
         <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
@@ -301,7 +306,7 @@ async function loadData(start = '', end = '') {
       </tr>
     `).join('');
 
-    tfoot.innerHTML = `
+    tfootPrint.innerHTML = `
       <tr style="border-top:2.5px solid #000;">
         <td colspan="2" style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">JUMLAH TOTAL (${count} hari)</td>
         <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(total)}</td>
@@ -325,7 +330,6 @@ function applyPreset(preset) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initTabulator();
   loadData();
 
   document.getElementById('btnFilter').addEventListener('click', () => {
@@ -340,16 +344,17 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.preset').forEach(el => {
     el.addEventListener('click', function(e) { e.preventDefault(); applyPreset(this.dataset.preset); });
   });
+
   document.getElementById('btnCetak').addEventListener('click', () => {
     const printView = document.getElementById('print-view');
-    const periodeText = document.getElementById('printPeriode').textContent;
+    const periodeText = document.getElementById('badgePeriode').textContent;
     const tbodyHTML = document.getElementById('tbodyPrint').innerHTML;
     const tfootHTML = document.getElementById('tfootPrint').innerHTML;
 
     printView.innerHTML = `
       <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:14px;">
         <h1 style="font-size:15pt; font-weight:800; text-transform:uppercase; margin:0 0 4px 0; color:#000;">Laporan Jasa Medis dr. Zainuddin (Bersih)</h1>
-        <p style="font-size:9pt; color:#333; margin:0;">${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
+        <p style="font-size:9pt; color:#333; margin:0;">Periode: ${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
       </div>
       <table style="width:100%; border-collapse:collapse; font-size:9.5pt; font-family:Arial, sans-serif; border:1.5px solid #000;">
         <thead>
@@ -359,12 +364,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <th style="border:1px solid #000; padding:6px; text-align:right; width:220px; color:#000;">JM dr. Zainuddin (Bersih)</th>
           </tr>
         </thead>
-        <tbody>
-          ${tbodyHTML}
-        </tbody>
-        <tfoot>
-          ${tfootHTML}
-        </tfoot>
+        <tbody>${tbodyHTML}</tbody>
+        <tfoot>${tfootHTML}</tfoot>
       </table>
       <div style="margin-top:16px; padding-top:6px; border-top:1px dashed #666; font-size:8pt; color:#555; text-align:center;">
         Dokumen ini digenerate otomatis oleh Sistem Laporan Keuangan Kasir PHP/MySQL

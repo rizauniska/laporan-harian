@@ -1,5 +1,5 @@
 <?php
-// absensi_libur.php – Master Hari Libur Nasional | AdminLTE 4
+// absensi_libur.php – Master Hari Libur Nasional dengan DataTables | AdminLTE 4
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
@@ -13,6 +13,8 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
+  <!-- DataTables Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -84,28 +86,22 @@ declare(strict_types=1);
           <div class="col-md-8 col-sm-12">
             <div class="card shadow-sm">
               <div class="card-header bg-white py-2">
-                <h6 class="card-title mb-0 fw-bold"><i class="bi bi-list-check text-primary me-2"></i>Daftar Hari Libur Nasional Terdaftar</h6>
+                <h6 class="card-title mb-0 fw-bold"><i class="bi bi-list-check text-primary me-2"></i>Daftar Hari Libur Nasional (DataTables)</h6>
               </div>
-              <div class="card-body p-0 table-responsive">
-                <table class="table table-hover align-middle mb-0" id="tableHolidays">
+              <div class="card-body p-3 table-responsive">
+                <table class="table table-striped table-bordered table-hover align-middle mb-0" id="tableHolidays" style="width:100%">
                   <thead class="table-light">
                     <tr>
-                      <th class="text-center" width="50">No</th>
+                      <th class="text-center" width="45">No</th>
                       <th width="120">Tanggal</th>
                       <th width="100">Hari</th>
                       <th>Nama Libur</th>
                       <th>Keterangan</th>
-                      <th class="text-center" width="90">Status</th>
-                      <th class="text-center" width="80">Aksi</th>
+                      <th class="text-center" width="80">Status</th>
+                      <th class="text-center" width="70">Aksi</th>
                     </tr>
                   </thead>
-                  <tbody id="tbodyHolidays">
-                    <tr>
-                      <td colspan="7" class="text-center py-4 text-muted">
-                        <div class="spinner-border spinner-border-sm text-primary me-1"></div> Memuat data...
-                      </td>
-                    </tr>
-                  </tbody>
+                  <tbody id="tbodyHolidays"></tbody>
                 </table>
               </div>
             </div>
@@ -120,62 +116,83 @@ declare(strict_types=1);
   <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </div>
 
+<!-- SCRIPTS: jQuery & DataTables Bootstrap 5 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+let dtHolidays = null;
 const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
+const dtIndonesian = {
+  search: "Cari:",
+  lengthMenu: "Tampilkan _MENU_ data",
+  info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+  infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+  infoFiltered: "(disaring dari _MAX_ total data)",
+  zeroRecords: "Tidak ada data yang cocok",
+  paginate: {
+    first: "Pertama",
+    last: "Terakhir",
+    next: "Berikutnya",
+    previous: "Sebelumnya"
+  }
+};
+
 async function loadHolidays() {
-  const tbody = document.getElementById('tbodyHolidays');
   try {
     const res = await fetch('api/absensi_libur.php');
     const json = await res.json();
 
     if (!json.success) {
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">${json.message}</td></tr>`;
+      alert(json.message);
       return;
     }
 
     renderHolidaysTable(json.data);
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Gagal memuat data: ${err.message}</td></tr>`;
+    alert('Gagal memuat data: ' + err.message);
   }
 }
 
 function renderHolidaysTable(data) {
-  const tbody = document.getElementById('tbodyHolidays');
-  if (data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Belum ada data hari libur.</td></tr>`;
-    return;
-  }
-
-  let html = '';
-  data.forEach((h, idx) => {
+  const tableData = data.map((h, idx) => {
     const d = new Date(h.date + 'T00:00:00');
     const dayName = dayNames[d.getDay()];
     const statusBadge = h.active == 1 
       ? '<span class="badge bg-success">Aktif</span>' 
       : '<span class="badge bg-secondary">Nonaktif</span>';
 
-    html += `
-      <tr>
-        <td class="text-center">${idx + 1}</td>
-        <td class="fw-semibold">${h.date}</td>
-        <td>${dayName}</td>
-        <td class="fw-bold">${h.name}</td>
-        <td><small class="text-muted">${h.description || '-'}</small></td>
-        <td class="text-center">${statusBadge}</td>
-        <td class="text-center">
-          <button class="btn btn-xs btn-outline-danger py-0 px-2" onclick="deleteHoliday(${h.id}, '${h.name}')" title="Hapus">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `;
+    return [
+      idx + 1,
+      `<strong>${h.date}</strong>`,
+      dayName,
+      h.name,
+      `<small class="text-muted">${h.description || '-'}</small>`,
+      statusBadge,
+      `<button class="btn btn-xs btn-outline-danger py-0 px-2" onclick="deleteHoliday(${h.id}, '${h.name}')" title="Hapus"><i class="bi bi-trash"></i></button>`
+    ];
   });
 
-  tbody.innerHTML = html;
+  if (dtHolidays) {
+    dtHolidays.destroy();
+    $('#tbodyHolidays').empty();
+  }
+
+  dtHolidays = $('#tableHolidays').DataTable({
+    data: tableData,
+    language: dtIndonesian,
+    pageLength: 20,
+    order: [[1, 'asc']],
+    columnDefs: [
+      { targets: [0, 2, 5, 6], className: 'text-center' },
+      { targets: [0, 6], orderable: false }
+    ],
+    responsive: true
+  });
 }
 
 // Save holiday form

@@ -1,5 +1,5 @@
 <?php
-// absensi_karyawan.php – Master Data Karyawan | AdminLTE 4
+// absensi_karyawan.php – Master Data Karyawan dengan DataTables | AdminLTE 4
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
@@ -13,6 +13,8 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
+  <!-- DataTables Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -62,26 +64,23 @@ declare(strict_types=1);
 
         <!-- TABLE CARD -->
         <div class="card shadow-sm">
-          <div class="card-body p-0 table-responsive">
-            <table class="table table-hover align-middle mb-0" id="tableEmployees">
+          <div class="card-header bg-white py-2">
+            <h6 class="card-title mb-0 fw-bold"><i class="bi bi-table text-primary me-2"></i>Daftar Seluruh Karyawan (DataTables)</h6>
+          </div>
+          <div class="card-body p-3 table-responsive">
+            <table class="table table-striped table-bordered table-hover align-middle mb-0" id="tableEmployees" style="width:100%">
               <thead class="table-light">
                 <tr>
-                  <th class="text-center" width="50">No</th>
+                  <th class="text-center" width="45">No</th>
                   <th>Nama Karyawan</th>
                   <th>Pekerjaan / Jabatan</th>
-                  <th class="text-center" width="160">Jenis Jadwal</th>
-                  <th class="text-center" width="100">Status</th>
+                  <th class="text-center" width="150">Jenis Jadwal</th>
+                  <th class="text-center" width="90">Status</th>
                   <th class="text-center" width="120">Tanggal Mulai</th>
                   <th class="text-center" width="100">Aksi</th>
                 </tr>
               </thead>
-              <tbody id="tbodyEmployees">
-                <tr>
-                  <td colspan="7" class="text-center py-4 text-muted">
-                    <div class="spinner-border spinner-border-sm text-primary me-1"></div> Memuat data karyawan...
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="tbodyEmployees"></tbody>
             </table>
           </div>
         </div>
@@ -103,12 +102,12 @@ declare(strict_types=1);
             <input type="hidden" id="empId" name="id" value="0">
 
             <div class="mb-3">
-              <label class="form-label fw-bold small mb-1" for="empName">Nama Lengkap</label>
+              <label class="form-label fw-bold small mb-1" for="empNameInput">Nama Lengkap</label>
               <input type="text" class="form-control form-control-sm" id="empNameInput" name="name" required placeholder="Contoh: Fitria Mahmudah">
             </div>
 
             <div class="mb-3">
-              <label class="form-label fw-bold small mb-1" for="empPosition">Jabatan / Unit</label>
+              <label class="form-label fw-bold small mb-1" for="empPositionInput">Jabatan / Unit</label>
               <input type="text" class="form-control form-control-sm" id="empPositionInput" name="position" required placeholder="Contoh: Apotek / Perawat / Admin">
             </div>
 
@@ -182,43 +181,55 @@ declare(strict_types=1);
   <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </div>
 
+<!-- SCRIPTS: jQuery & DataTables Bootstrap 5 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+let dtEmployees = null;
 let employeesList = [];
 let selectedScheduleType = '';
 const modalEmpEl = document.getElementById('modalEmployee');
 const modalEmp = new bootstrap.Modal(modalEmpEl);
 
+const dtIndonesian = {
+  search: "Cari:",
+  lengthMenu: "Tampilkan _MENU_ data",
+  info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+  infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+  infoFiltered: "(disaring dari _MAX_ total data)",
+  zeroRecords: "Tidak ada data yang cocok",
+  paginate: {
+    first: "Pertama",
+    last: "Terakhir",
+    next: "Berikutnya",
+    previous: "Sebelumnya"
+  }
+};
+
 async function loadEmployees() {
-  const tbody = document.getElementById('tbodyEmployees');
   try {
     const url = selectedScheduleType ? `api/absensi_karyawan.php?schedule_type=${selectedScheduleType}` : 'api/absensi_karyawan.php';
     const res = await fetch(url);
     const json = await res.json();
 
     if (!json.success) {
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">${json.message}</td></tr>`;
+      alert(json.message);
       return;
     }
 
     employeesList = json.data;
     renderEmployeesTable(employeesList);
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Gagal memuat data: ${err.message}</td></tr>`;
+    alert('Gagal memuat data: ' + err.message);
   }
 }
 
 function renderEmployeesTable(data) {
-  const tbody = document.getElementById('tbodyEmployees');
-  if (data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Tidak ada data karyawan.</td></tr>`;
-    return;
-  }
-
-  let html = '';
-  data.forEach((emp, idx) => {
+  const tableData = data.map((emp, idx) => {
     const badgeClass = {
       'NORMAL': 'bg-primary',
       'APOTEKER': 'text-white" style="background:#8b5cf6;"',
@@ -230,27 +241,33 @@ function renderEmployeesTable(data) {
       ? '<span class="badge bg-success">Aktif</span>' 
       : '<span class="badge bg-secondary">Nonaktif</span>';
 
-    html += `
-      <tr>
-        <td class="text-center">${idx + 1}</td>
-        <td class="fw-bold">${emp.name}</td>
-        <td>${emp.position}</td>
-        <td class="text-center"><span class="badge ${badgeClass}">${emp.schedule_type}</span></td>
-        <td class="text-center">${statusBadge}</td>
-        <td class="text-center">${emp.start_date || '-'}</td>
-        <td class="text-center">
-          <button class="btn btn-xs btn-outline-primary py-0 px-2 me-1" onclick="editEmployee(${emp.id})" title="Edit">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-xs btn-outline-danger py-0 px-2" onclick="deleteEmployee(${emp.id}, '${emp.name}')" title="Hapus">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `;
+    return [
+      idx + 1,
+      `<strong>${emp.name}</strong>`,
+      emp.position,
+      `<span class="badge ${badgeClass}">${emp.schedule_type}</span>`,
+      statusBadge,
+      emp.start_date || '-',
+      `<button class="btn btn-xs btn-outline-primary py-0 px-2 me-1" onclick="editEmployee(${emp.id})" title="Edit"><i class="bi bi-pencil"></i></button><button class="btn btn-xs btn-outline-danger py-0 px-2" onclick="deleteEmployee(${emp.id}, '${emp.name}')" title="Hapus"><i class="bi bi-trash"></i></button>`
+    ];
   });
 
-  tbody.innerHTML = html;
+  if (dtEmployees) {
+    dtEmployees.destroy();
+    $('#tbodyEmployees').empty();
+  }
+
+  dtEmployees = $('#tableEmployees').DataTable({
+    data: tableData,
+    language: dtIndonesian,
+    pageLength: 25,
+    order: [[1, 'asc']],
+    columnDefs: [
+      { targets: [0, 3, 4, 5, 6], className: 'text-center' },
+      { targets: [0, 6], orderable: false }
+    ],
+    responsive: true
+  });
 }
 
 // Filter tabs

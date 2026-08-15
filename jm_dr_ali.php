@@ -1,5 +1,5 @@
 <?php
-// jm_dr_ali.php – Detail JM dr. Ali dengan Tabulator JS | AdminLTE 4
+// jm_dr_ali.php – Detail JM dr. Ali (Program & Non-Program) dengan DataTables | AdminLTE 4
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
@@ -8,14 +8,14 @@ declare(strict_types=1);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JM dr. Ali | Kasir Laporan Keuangan</title>
-  <meta name="description" content="Laporan detail Jasa Medis dr. Ali kasir apotek.">
+  <meta name="description" content="Laporan detail Jasa Medis dr. Ali Program dan Non-Program.">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_bootstrap5.min.css">
-  <!-- Custom Main CSS -->
+  <!-- DataTables Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -33,7 +33,7 @@ declare(strict_types=1);
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h3 class="mb-0 fw-bold"><i class="fas fa-stethoscope me-2" style="color:#6c63ff"></i>JM dr. Ali (Program & non Program)</h3>
+            <h3 class="mb-0 fw-bold"><i class="fas fa-stethoscope text-primary me-2"></i>JM dr. Ali</h3>
           </div>
           <div class="col-sm-6 text-end">
             <ol class="breadcrumb float-sm-end mb-0">
@@ -88,83 +88,95 @@ declare(strict_types=1);
 
         <!-- STAT CARDS -->
         <div class="row g-3 mb-4 stat-cards no-print">
-          <div class="col-md-4 col-sm-6">
+          <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm stat-card total-card p-3">
               <div class="d-flex align-items-center gap-3">
-                <div class="stat-icon-wrapper stat-icon-purple">
-                  <i class="fas fa-stethoscope"></i>
-                </div>
-                <div>
-                  <div class="text-muted small fw-semibold">Total JM dr. Ali</div>
-                  <div class="fs-5 fw-bold" style="color:#6c63ff" id="statTotal">Rp 0</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-6">
-            <div class="card shadow-sm stat-card prog-card p-3">
-              <div class="d-flex align-items-center gap-3">
-                <div class="stat-icon-wrapper stat-icon-blue">
-                  <i class="bi bi-journal-check"></i>
-                </div>
+                <div class="stat-icon-wrapper stat-icon-cyan"><i class="fas fa-stethoscope"></i></div>
                 <div>
                   <div class="text-muted small fw-semibold">JM Program</div>
-                  <div class="fs-5 fw-bold text-primary" id="statProgram">Rp 0</div>
+                  <div class="fs-6 fw-bold text-info" id="statProgram">Rp 0</div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-md-4 col-sm-6">
-            <div class="card shadow-sm stat-card non-card p-3">
+          <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm stat-card total-card p-3">
               <div class="d-flex align-items-center gap-3">
-                <div class="stat-icon-wrapper stat-icon-green">
-                  <i class="bi bi-journal-x"></i>
-                </div>
+                <div class="stat-icon-wrapper stat-icon-blue"><i class="fas fa-hand-holding-medical"></i></div>
                 <div>
-                  <div class="text-muted small fw-semibold">JM non Program</div>
-                  <div class="fs-5 fw-bold text-success" id="statNonProg">Rp 0</div>
+                  <div class="text-muted small fw-semibold">JM Non-Program</div>
+                  <div class="fs-6 fw-bold text-primary" id="statNonProgram">Rp 0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm stat-card count-card p-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper stat-icon-green"><i class="bi bi-calendar-check"></i></div>
+                <div>
+                  <div class="text-muted small fw-semibold">Jumlah Hari</div>
+                  <div class="fs-6 fw-bold text-success" id="statCount">0 Hari</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm stat-card stat-card-warning p-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="stat-icon-wrapper stat-icon-yellow"><i class="bi bi-wallet2"></i></div>
+                <div>
+                  <div class="text-muted small fw-semibold">Total Gabungan</div>
+                  <div class="fs-6 fw-bold text-warning" id="statTotal">Rp 0</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- TABEL LAPORAN -->
+        <!-- TABLE CARD -->
         <div class="card shadow-sm">
           <div class="card-header d-flex align-items-center justify-content-between py-3">
-            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-table text-primary me-2"></i>Rincian JM dr. Ali</h5>
-            <span class="badge bg-secondary no-print" id="badgePeriode">Semua Data</span>
+            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-table text-primary me-2"></i>Rincian Jasa Medis dr. Ali (DataTables)</h5>
+            <div class="d-flex align-items-center gap-2 no-print">
+              <span class="badge bg-secondary" id="badgePeriode">Semua Data</span>
+              <button class="btn btn-primary btn-sm fw-semibold" id="btnCetak"><i class="bi bi-printer me-1"></i> Cetak PDF</button>
+            </div>
           </div>
           <div class="card-body p-3">
-            <div class="print-header px-4 pt-3">
-              <h2>Laporan JM dr. Ali</h2>
-              <p id="printPeriode">Periode: Semua Data</p>
-              <p>Dicetak: <?= date('d/m/Y H:i') ?></p>
+            <!-- DataTables Table -->
+            <div class="table-responsive no-print">
+              <table class="table table-striped table-bordered table-hover align-middle mb-0" id="aliTable" style="width:100%">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-center" width="50">No</th>
+                    <th>Tanggal Laporan</th>
+                    <th class="text-end" width="180">JM dr. Ali Program</th>
+                    <th class="text-end" width="180">JM dr. Ali Non-Prog</th>
+                    <th class="text-end" width="180">Total</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyScreen"></tbody>
+                <tfoot class="table-light fw-bold">
+                  <tr>
+                    <td colspan="2" class="text-end">JUMLAH TOTAL:</td>
+                    <td class="text-end text-info" id="sumProgram">Rp 0</td>
+                    <td class="text-end text-primary" id="sumNonProg">Rp 0</td>
+                    <td class="text-end text-success fs-6" id="sumTotal">Rp 0</td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
 
-            <!-- Tabulator Table (Screen) -->
-            <div id="aliTable" class="no-print"></div>
-
-            <!-- Summary Screen -->
-            <div class="mt-3 p-3 bg-light rounded border d-flex flex-wrap justify-content-between align-items-center no-print">
-              <div>
-                <span class="fw-bold text-dark me-3"><i class="bi bi-journal-check me-1"></i>Program: <span class="text-primary fs-6" id="sumProgText">Rp 0</span></span>
-                <span class="fw-bold text-dark me-3"><i class="bi bi-journal-x me-1"></i>Non Program: <span class="text-success fs-6" id="sumNonText">Rp 0</span></span>
-              </div>
-              <div class="mt-2 mt-sm-0">
-                <span class="fw-bold text-dark"><i class="bi bi-sigma me-1"></i>TOTAL: <span class="fs-5" style="color:#6c63ff" id="sumTotalText">Rp 0</span></span>
-              </div>
-            </div>
-
-            <!-- Print Table (PDF) -->
-            <table class="table table-bordered align-middle mb-0 print-only-table" id="tabelPrint">
+            <!-- Print only table -->
+            <table class="table table-bordered align-middle mb-0 print-only-table" id="tabelPrint" style="display:none;">
               <thead>
                 <tr class="text-center">
                   <th style="width:50px">No</th>
                   <th class="text-start">Tanggal</th>
                   <th class="text-end">JM Program</th>
-                  <th class="text-end">JM non Program</th>
-                  <th class="text-end">Total JM dr. Ali</th>
+                  <th class="text-end">JM Non-Program</th>
+                  <th class="text-end">Total</th>
                 </tr>
               </thead>
               <tbody id="tbodyPrint"></tbody>
@@ -181,22 +193,35 @@ declare(strict_types=1);
   <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </div>
 
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1100">
+<div id="print-view"></div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
   <div id="appToast" class="toast align-items-center text-white bg-dark border-0" role="alert">
     <div class="d-flex"><div class="toast-body" id="toastMsg"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
   </div>
 </div>
-<!-- PRINT VIEW (Hanya aktif saat cetak PDF) -->
-<div id="print-view"></div>
 
+<!-- SCRIPTS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
-<script src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
 'use strict';
+let dtTable = null;
 
-let tabulatorTable = null;
+const dtIndonesian = {
+  search: "Cari:",
+  lengthMenu: "Tampilkan _MENU_ data",
+  info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+  infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+  infoFiltered: "(disaring dari _MAX_ total data)",
+  zeroRecords: "Tidak ada data yang cocok",
+  paginate: { first: "Pertama", last: "Terakhir", next: "Berikutnya", previous: "Sebelumnya" }
+};
 
 function fmt(num) {
   const n = Math.round(Number(num) || 0);
@@ -225,54 +250,11 @@ function showToast(msg, bgClass = 'bg-dark') {
   new bootstrap.Toast(toastEl).show();
 }
 
-function initTabulator() {
-  tabulatorTable = new Tabulator('#aliTable', {
-    data: [],
-    layout: 'fitColumns',
-    responsiveLayout: 'collapse',
-    pagination: 'local',
-    paginationSize: 15,
-    paginationSizeSelector: [10, 15, 30, 50, 100],
-    movableColumns: true,
-    placeholder: 'Tidak ada data',
-    columns: [
-      { title: 'No', formatter: 'rownum', width: 65, headerHozAlign: 'center', hozAlign: 'center', headerSort: false },
-      {
-        title: 'Tanggal Laporan',
-        field: 'tanggal',
-        headerHozAlign: 'left',
-        formatter: cell => `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 badge-date"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(cell.getValue())}</span>`
-      },
-      {
-        title: 'JM Program',
-        field: 'jm_dr_ali_program',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => `<span class="fw-bold text-primary">${fmt(cell.getValue())}</span>`
-      },
-      {
-        title: 'JM Non-Program',
-        field: 'jm_dr_ali_non_program',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => `<span class="fw-bold text-success">${fmt(cell.getValue())}</span>`
-      },
-      {
-        title: 'Total JM dr. Ali',
-        field: 'total_ali',
-        headerHozAlign: 'right',
-        hozAlign: 'right',
-        formatter: cell => `<span class="fw-bold" style="color:#6c63ff">${fmt(cell.getValue())}</span>`
-      }
-    ]
-  });
-}
-
 async function loadData(start = '', end = '') {
-  const tbody = document.getElementById('tbodyPrint');
-  const tfoot = document.getElementById('tfootPrint');
-  tbody.innerHTML = '';
-  tfoot.innerHTML = '';
+  const tbodyPrint = document.getElementById('tbodyPrint');
+  const tfootPrint = document.getElementById('tfootPrint');
+  tbodyPrint.innerHTML = '';
+  tfootPrint.innerHTML = '';
 
   try {
     let url = 'api/jm_dr_ali.php';
@@ -286,18 +268,20 @@ async function loadData(start = '', end = '') {
 
     if (!json.success) throw new Error(json.error || 'Error');
 
-    const rows    = json.data   || [];
-    const total   = json.total  || 0;
-    const totProg = json.total_program || 0;
-    const totNon  = json.total_non_prog || 0;
-    const count   = json.count  || 0;
+    const rows  = json.data  || [];
+    const totalProg    = json.total_program || 0;
+    const totalNonProg = json.total_non_program || 0;
+    const grandTotal   = json.total || 0;
+    const count        = json.count || 0;
 
-    document.getElementById('statTotal').textContent    = fmt(total);
-    document.getElementById('statProgram').textContent   = fmt(totProg);
-    document.getElementById('statNonProg').textContent  = fmt(totNon);
-    document.getElementById('sumProgText').textContent  = fmt(totProg);
-    document.getElementById('sumNonText').textContent   = fmt(totNon);
-    document.getElementById('sumTotalText').textContent = fmt(total);
+    document.getElementById('statProgram').textContent    = fmt(totalProg);
+    document.getElementById('statNonProgram').textContent = fmt(totalNonProg);
+    document.getElementById('statTotal').textContent      = fmt(grandTotal);
+    document.getElementById('statCount').textContent      = count + ' Hari';
+
+    document.getElementById('sumProgram').textContent = fmt(totalProg);
+    document.getElementById('sumNonProg').textContent = fmt(totalNonProg);
+    document.getElementById('sumTotal').textContent   = fmt(grandTotal);
 
     let periodeText = 'Semua Data';
     if (start && end)   periodeText = start + ' s/d ' + end;
@@ -305,30 +289,55 @@ async function loadData(start = '', end = '') {
     else if (end)       periodeText = 'Sampai ' + end;
 
     document.getElementById('badgePeriode').textContent = periodeText;
-    document.getElementById('printPeriode').textContent = 'Periode: ' + periodeText;
 
-    if (tabulatorTable) tabulatorTable.setData(rows);
+    const tableData = rows.map((r, idx) => {
+      const rowTotal = (Number(r.jm_dr_ali_program) || 0) + (Number(r.jm_dr_ali_non_program) || 0);
+      return [
+        idx + 1,
+        `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
+        `<span class="text-info fw-semibold">${fmt(r.jm_dr_ali_program)}</span>`,
+        `<span class="text-primary fw-semibold">${fmt(r.jm_dr_ali_non_program)}</span>`,
+        `<span class="text-success fw-bold">${fmt(rowTotal)}</span>`
+      ];
+    });
 
-    if (rows.length === 0) {
-      return;
+    if (dtTable) {
+      dtTable.destroy();
+      $('#tbodyScreen').empty();
     }
 
-    tbody.innerHTML = rows.map((r, idx) => `
-      <tr>
-        <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
-        <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(r.jm_dr_ali_program)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(r.jm_dr_ali_non_program)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(r.total_ali)}</td>
-      </tr>
-    `).join('');
+    dtTable = $('#aliTable').DataTable({
+      data: tableData,
+      language: dtIndonesian,
+      pageLength: 15,
+      order: [[1, 'desc']],
+      columnDefs: [
+        { targets: [0], className: 'text-center', orderable: false },
+        { targets: [2, 3, 4], className: 'text-end' }
+      ],
+      responsive: true
+    });
 
-    tfoot.innerHTML = `
+    // Print markup
+    tbodyPrint.innerHTML = rows.map((r, idx) => {
+      const rowTotal = (Number(r.jm_dr_ali_program) || 0) + (Number(r.jm_dr_ali_non_program) || 0);
+      return `
+        <tr>
+          <td style="border:1px solid #000; padding:6px; text-align:center; color:#000;">${idx + 1}</td>
+          <td style="border:1px solid #000; padding:6px; color:#000;">${fmtTglPrint(r.tanggal)}</td>
+          <td style="border:1px solid #000; padding:6px; text-align:right; color:#000;">${fmt(r.jm_dr_ali_program)}</td>
+          <td style="border:1px solid #000; padding:6px; text-align:right; color:#000;">${fmt(r.jm_dr_ali_non_program)}</td>
+          <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(rowTotal)}</td>
+        </tr>
+      `;
+    }).join('');
+
+    tfootPrint.innerHTML = `
       <tr style="border-top:2.5px solid #000;">
         <td colspan="2" style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">JUMLAH TOTAL (${count} hari)</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(totProg)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(totNon)}</td>
-        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(total)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(totalProg)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(totalNonProg)}</td>
+        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold; color:#000;">${fmt(grandTotal)}</td>
       </tr>
     `;
   } catch (err) {
@@ -349,7 +358,6 @@ function applyPreset(preset) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initTabulator();
   loadData();
 
   document.getElementById('btnFilter').addEventListener('click', () => {
@@ -364,40 +372,41 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.preset').forEach(el => {
     el.addEventListener('click', function(e) { e.preventDefault(); applyPreset(this.dataset.preset); });
   });
+
   document.getElementById('btnCetak').addEventListener('click', () => {
     const printView = document.getElementById('print-view');
-    const periodeText = document.getElementById('printPeriode').textContent;
+    const periodeText = document.getElementById('badgePeriode').textContent;
     const tbodyHTML = document.getElementById('tbodyPrint').innerHTML;
     const tfootHTML = document.getElementById('tfootPrint').innerHTML;
 
     printView.innerHTML = `
       <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:14px;">
         <h1 style="font-size:15pt; font-weight:800; text-transform:uppercase; margin:0 0 4px 0; color:#000;">Laporan Jasa Medis dr. Ali</h1>
-        <p style="font-size:9pt; color:#333; margin:0;">${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
+        <p style="font-size:9pt; color:#333; margin:0;">Periode: ${periodeText} &nbsp;|&nbsp; Dicetak: ${new Date().toLocaleString('id-ID')}</p>
       </div>
       <table style="width:100%; border-collapse:collapse; font-size:9.5pt; font-family:Arial, sans-serif; border:1.5px solid #000;">
         <thead>
           <tr style="border-bottom:2.5px solid #000; background:#f0f0f0;">
             <th style="border:1px solid #000; padding:6px; text-align:center; width:50px; color:#000;">No</th>
             <th style="border:1px solid #000; padding:6px; text-align:left; color:#000;">Tanggal Laporan</th>
-            <th style="border:1px solid #000; padding:6px; text-align:right; color:#000;">JM Program</th>
-            <th style="border:1px solid #000; padding:6px; text-align:right; color:#000;">JM Non-Program</th>
-            <th style="border:1px solid #000; padding:6px; text-align:right; width:180px; color:#000;">Total JM dr. Ali</th>
+            <th style="border:1px solid #000; padding:6px; text-align:right; width:160px; color:#000;">JM dr. Ali Program</th>
+            <th style="border:1px solid #000; padding:6px; text-align:right; width:160px; color:#000;">JM dr. Ali Non-Prog</th>
+            <th style="border:1px solid #000; padding:6px; text-align:right; width:160px; color:#000;">Total</th>
           </tr>
         </thead>
-        <tbody>
-          ${tbodyHTML}
-        </tbody>
-        <tfoot>
-          ${tfootHTML}
-        </tfoot>
+        <tbody>${tbodyHTML}</tbody>
+        <tfoot>${tfootHTML}</tfoot>
       </table>
       <div style="margin-top:16px; padding-top:6px; border-top:1px dashed #666; font-size:8pt; color:#555; text-align:center;">
         Dokumen ini digenerate otomatis oleh Sistem Laporan Keuangan Kasir PHP/MySQL
       </div>
     `;
 
+    document.body.classList.add('printing-active');
     window.print();
+    setTimeout(() => {
+      document.body.classList.remove('printing-active');
+    }, 1000);
   });
 });
 </script>

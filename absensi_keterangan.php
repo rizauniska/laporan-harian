@@ -1,5 +1,5 @@
 <?php
-// absensi_keterangan.php – Input Keterangan Absensi (Sakit, Izin, Cuti) | AdminLTE 4
+// absensi_keterangan.php – Input Keterangan Absensi (Sakit, Izin, Cuti) dengan DataTables | AdminLTE 4
 declare(strict_types=1);
 ?>
 <!DOCTYPE html>
@@ -13,6 +13,8 @@ declare(strict_types=1);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/css/adminlte.min.css">
+  <!-- DataTables Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -110,30 +112,24 @@ declare(strict_types=1);
         <!-- HISTORY TABLE -->
         <div class="card shadow-sm">
           <div class="card-header bg-white py-2">
-            <h6 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history text-primary me-2"></i>Daftar Riwayat Keterangan Absensi</h6>
+            <h6 class="card-title mb-0 fw-bold"><i class="bi bi-clock-history text-primary me-2"></i>Daftar Riwayat Keterangan Absensi (DataTables)</h6>
           </div>
-          <div class="card-body p-0 table-responsive">
-            <table class="table table-hover align-middle mb-0" id="tableNotes">
+          <div class="card-body p-3 table-responsive">
+            <table class="table table-striped table-bordered table-hover align-middle mb-0" id="tableNotes" style="width:100%">
               <thead class="table-light">
                 <tr>
-                  <th class="text-center" width="50">No</th>
+                  <th class="text-center" width="45">No</th>
                   <th>Nama Karyawan</th>
                   <th>Jabatan</th>
-                  <th class="text-center" width="120">Jenis</th>
-                  <th class="text-center" width="130">Tanggal Mulai</th>
-                  <th class="text-center" width="130">Tanggal Selesai</th>
+                  <th class="text-center" width="100">Jenis</th>
+                  <th class="text-center" width="120">Tanggal Mulai</th>
+                  <th class="text-center" width="120">Tanggal Selesai</th>
                   <th class="text-center" width="110">Rentang Hari</th>
                   <th>Catatan</th>
-                  <th class="text-center" width="80">Aksi</th>
+                  <th class="text-center" width="70">Aksi</th>
                 </tr>
               </thead>
-              <tbody id="tbodyNotes">
-                <tr>
-                  <td colspan="9" class="text-center py-4 text-muted">
-                    <div class="spinner-border spinner-border-sm text-primary me-1"></div> Memuat data...
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="tbodyNotes"></tbody>
             </table>
           </div>
         </div>
@@ -146,30 +142,48 @@ declare(strict_types=1);
   <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </div>
 
+<!-- SCRIPTS: jQuery & DataTables Bootstrap 5 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc4/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-// Set default today date
+let dtNotes = null;
 const todayStr = new Date().toISOString().split('T')[0];
 document.getElementById('noteStartDate').value = todayStr;
 document.getElementById('noteEndDate').value = todayStr;
 
+const dtIndonesian = {
+  search: "Cari:",
+  lengthMenu: "Tampilkan _MENU_ data",
+  info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+  infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+  infoFiltered: "(disaring dari _MAX_ total data)",
+  zeroRecords: "Tidak ada data yang cocok",
+  paginate: {
+    first: "Pertama",
+    last: "Terakhir",
+    next: "Berikutnya",
+    previous: "Sebelumnya"
+  }
+};
+
 async function loadNotes() {
-  const tbody = document.getElementById('tbodyNotes');
   try {
     const res = await fetch('api/absensi_keterangan.php');
     const json = await res.json();
 
     if (!json.success) {
-      tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-danger">${json.message}</td></tr>`;
+      alert(json.message);
       return;
     }
 
     renderEmployeeSelect(json.employees);
     renderNotesTable(json.data);
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-danger">Gagal memuat data: ${err.message}</td></tr>`;
+    alert('Gagal memuat data: ' + err.message);
   }
 }
 
@@ -185,14 +199,7 @@ function renderEmployeeSelect(employees) {
 }
 
 function renderNotesTable(data) {
-  const tbody = document.getElementById('tbodyNotes');
-  if (data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">Belum ada catatan sakit, izin, atau cuti.</td></tr>`;
-    return;
-  }
-
-  let html = '';
-  data.forEach((n, idx) => {
+  const tableData = data.map((n, idx) => {
     const sDate = new Date(n.start_date);
     const eDate = new Date(n.end_date);
     const days = Math.round((eDate - sDate) / (1000 * 60 * 60 * 24)) + 1;
@@ -203,26 +210,35 @@ function renderNotesTable(data) {
       'cuti': 'bg-primary'
     }[n.type.toLowerCase()] || 'bg-secondary';
 
-    html += `
-      <tr>
-        <td class="text-center">${idx + 1}</td>
-        <td class="fw-bold">${n.employee_name}</td>
-        <td>${n.employee_position}</td>
-        <td class="text-center"><span class="badge ${badgeClass}">${n.type.toUpperCase()}</span></td>
-        <td class="text-center">${n.start_date}</td>
-        <td class="text-center">${n.end_date}</td>
-        <td class="text-center fw-semibold">${days} Hari</td>
-        <td>${n.notes || '-'}</td>
-        <td class="text-center">
-          <button class="btn btn-xs btn-outline-danger py-0 px-2" onclick="deleteNote(${n.id})" title="Hapus">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `;
+    return [
+      idx + 1,
+      `<strong>${n.employee_name}</strong>`,
+      n.employee_position,
+      `<span class="badge ${badgeClass}">${n.type.toUpperCase()}</span>`,
+      n.start_date,
+      n.end_date,
+      `<span class="fw-semibold">${days} Hari</span>`,
+      n.notes || '-',
+      `<button class="btn btn-xs btn-outline-danger py-0 px-2" onclick="deleteNote(${n.id})" title="Hapus"><i class="bi bi-trash"></i></button>`
+    ];
   });
 
-  tbody.innerHTML = html;
+  if (dtNotes) {
+    dtNotes.destroy();
+    $('#tbodyNotes').empty();
+  }
+
+  dtNotes = $('#tableNotes').DataTable({
+    data: tableData,
+    language: dtIndonesian,
+    pageLength: 25,
+    order: [[4, 'desc']],
+    columnDefs: [
+      { targets: [0, 3, 4, 5, 6, 8], className: 'text-center' },
+      { targets: [0, 8], orderable: false }
+    ],
+    responsive: true
+  });
 }
 
 // Auto update end date if start date changed and end date was equal
