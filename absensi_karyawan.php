@@ -263,20 +263,19 @@ function renderEmployeesTable(data) {
     pageLength: 25,
     order: [[1, 'asc']],
     columnDefs: [
-      {
-        targets: 0,
-        className: 'text-center',
-        orderable: false,
-        searchable: false,
-        render: function (data, type, row, meta) {
-          return meta.row + meta.settings._iDisplayStart + 1;
-        }
-      },
+      { targets: 0, className: 'text-center', orderable: false, searchable: false },
       { targets: [3, 4, 5, 6], className: 'text-center' },
       { targets: [6], orderable: false }
     ],
     responsive: true
   });
+
+  dtEmployees.on('draw.dt', function () {
+    const start = dtEmployees.page.info().start;
+    dtEmployees.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+      cell.innerHTML = start + i + 1;
+    });
+  }).draw();
 }
 
 // Filter tabs

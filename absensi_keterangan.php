@@ -234,20 +234,19 @@ function renderNotesTable(data) {
     pageLength: 25,
     order: [[4, 'desc']],
     columnDefs: [
-      {
-        targets: 0,
-        className: 'text-center',
-        orderable: false,
-        searchable: false,
-        render: function (data, type, row, meta) {
-          return meta.row + meta.settings._iDisplayStart + 1;
-        }
-      },
+      { targets: 0, className: 'text-center', orderable: false, searchable: false },
       { targets: [3, 4, 5, 6, 8], className: 'text-center' },
       { targets: [8], orderable: false }
     ],
     responsive: true
   });
+
+  dtNotes.on('draw.dt', function () {
+    const start = dtNotes.page.info().start;
+    dtNotes.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+      cell.innerHTML = start + i + 1;
+    });
+  }).draw();
 }
 
 // Auto update end date if start date changed and end date was equal

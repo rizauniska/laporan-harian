@@ -188,20 +188,19 @@ function renderHolidaysTable(data) {
     pageLength: 20,
     order: [[1, 'asc']],
     columnDefs: [
-      {
-        targets: 0,
-        className: 'text-center',
-        orderable: false,
-        searchable: false,
-        render: function (data, type, row, meta) {
-          return meta.row + meta.settings._iDisplayStart + 1;
-        }
-      },
+      { targets: 0, className: 'text-center', orderable: false, searchable: false },
       { targets: [2, 5, 6], className: 'text-center' },
       { targets: [6], orderable: false }
     ],
     responsive: true
   });
+
+  dtHolidays.on('draw.dt', function () {
+    const start = dtHolidays.page.info().start;
+    dtHolidays.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+      cell.innerHTML = start + i + 1;
+    });
+  }).draw();
 }
 
 // Save holiday form

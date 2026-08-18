@@ -293,20 +293,19 @@ async function loadData(start = '', end = '') {
       pageLength: 15,
       order: [[1, 'desc']],
       columnDefs: [
-        {
-          targets: 0,
-          className: 'text-center',
-          orderable: false,
-          searchable: false,
-          render: function (data, type, row, meta) {
-            return meta.row + meta.settings._iDisplayStart + 1;
-          }
-        },
+        { targets: 0, className: 'text-center', orderable: false, searchable: false },
         { targets: [2], className: 'text-center', orderable: false },
         { targets: [3], className: 'text-end' }
       ],
       responsive: true
     });
+
+    dtTable.on('draw.dt', function () {
+      const start = dtTable.page.info().start;
+      dtTable.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+        cell.innerHTML = start + i + 1;
+      });
+    }).draw();
 
     // Print markup
     tbodyPrint.innerHTML = rows.map((r, idx) => {

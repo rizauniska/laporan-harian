@@ -417,20 +417,19 @@ async function loadPeriods() {
       pageLength: 10,
       order: [[2, 'desc']],
       columnDefs: [
-        {
-          targets: 0,
-          className: 'text-center',
-          orderable: false,
-          searchable: false,
-          render: function (data, type, row, meta) {
-            return meta.row + meta.settings._iDisplayStart + 1;
-          }
-        },
+        { targets: 0, className: 'text-center', orderable: false, searchable: false },
         { targets: [2, 3, 4, 5], className: 'text-center' },
         { targets: [5], orderable: false }
       ],
       responsive: true
     });
+
+    dtPeriods.on('draw.dt', function () {
+      const start = dtPeriods.page.info().start;
+      dtPeriods.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+        cell.innerHTML = start + i + 1;
+      });
+    }).draw();
   } catch (err) {
     console.error(err);
   }
