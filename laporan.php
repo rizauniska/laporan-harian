@@ -140,15 +140,14 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
 
                             <!-- Rincian JM Dokter -->
                             <div class="p-2 border rounded bg-light mb-3">
-                              <div class="d-flex align-items-center justify-content-between mb-2">
+                              <div class="d-flex align-items-center mb-2">
                                 <span class="small fw-bold text-primary">
                                   <i class="bi bi-person-badge-fill me-1"></i> Rincian JM Dokter
                                   <span class="badge bg-info text-dark ms-1" style="font-size:.65rem">ter-include</span>
                                 </span>
-                                <span class="badge bg-secondary opacity-75" id="badgeJumatNotice" style="font-size:.65rem">JM dr. Ali hanya di Hari Jum'at</span>
                               </div>
 
-                              <!-- JM dr. Zainuddin (Setiap Hari) -->
+                              <!-- JM dr. Zainuddin -->
                               <div class="mb-2">
                                 <label class="form-label small fw-semibold text-muted mb-1" for="a-jmDrZainuddin">JM dr. Zainuddin</label>
                                 <div class="input-group input-group-sm">
@@ -156,34 +155,24 @@ $yesterday = date('Y-m-d', strtotime('-1 day'));
                                   <input type="text" class="form-control text-end-input fw-semibold" id="a-jmDrZainuddin"
                                     placeholder="0" autocomplete="off" oninput="fmtCur(this); markDirty()">
                                 </div>
-                                <!-- Live preview JM Bersih (hanya muncul jika ada JM Ali Program) -->
-                                <div id="a-jmZainuddinBersihWrapper" class="d-none mt-1 px-2 py-1 rounded d-flex justify-content-between align-items-center" style="background:#e8f4fd; border:1px solid #bee3f8;">
-                                  <span class="small text-info-emphasis"><i class="bi bi-arrow-return-right me-1"></i>JM Bersih (setelah dikurangi Ali Program)</span>
-                                  <span class="small fw-bold text-info" id="a-jmZainuddinBersih">Rp 0</span>
-                                </div>
                               </div>
 
-                              <!-- Khusus Jum'at: JM dr. Ali -->
-                              <div id="containerJmDrAli" class="d-none">
-                                <div class="alert alert-info py-1 px-2 mb-2 small fw-semibold border-0 text-info-emphasis bg-info-subtle">
-                                  <i class="bi bi-calendar-check me-1"></i> Hari Jum'at: Silakan isi JM dr. Ali
-                                </div>
-                                <div class="row g-2 mb-1">
-                                  <div class="col-6">
-                                    <label class="form-label small fw-semibold text-muted mb-1" for="a-jmDrAliProgram">JM dr. Ali (Program)</label>
-                                    <div class="input-group input-group-sm">
-                                      <span class="input-group-text bg-white">Rp</span>
-                                      <input type="text" class="form-control text-end-input fw-semibold text-primary" id="a-jmDrAliProgram"
-                                        placeholder="0" autocomplete="off" oninput="fmtCur(this); markDirty()">
-                                    </div>
+                              <!-- JM dr. Ali Program + Non-Program -->
+                              <div class="row g-2 mb-1">
+                                <div class="col-6">
+                                  <label class="form-label small fw-semibold text-muted mb-1" for="a-jmDrAliProgram">JM dr. Ali (Program)</label>
+                                  <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-white">Rp</span>
+                                    <input type="text" class="form-control text-end-input fw-semibold text-primary" id="a-jmDrAliProgram"
+                                      placeholder="0" autocomplete="off" oninput="fmtCur(this); markDirty()">
                                   </div>
-                                  <div class="col-6">
-                                    <label class="form-label small fw-semibold text-muted mb-1" for="a-jmDrAliNonProgram">JM dr. Ali (non Program)</label>
-                                    <div class="input-group input-group-sm">
-                                      <span class="input-group-text bg-white">Rp</span>
-                                      <input type="text" class="form-control text-end-input fw-semibold text-primary" id="a-jmDrAliNonProgram"
-                                        placeholder="0" autocomplete="off" oninput="fmtCur(this); markDirty()">
-                                    </div>
+                                </div>
+                                <div class="col-6">
+                                  <label class="form-label small fw-semibold text-muted mb-1" for="a-jmDrAliNonProgram">JM dr. Ali (non Program)</label>
+                                  <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-white">Rp</span>
+                                    <input type="text" class="form-control text-end-input fw-semibold text-primary" id="a-jmDrAliNonProgram"
+                                      placeholder="0" autocomplete="off" oninput="fmtCur(this); markDirty()">
                                   </div>
                                 </div>
                               </div>

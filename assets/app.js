@@ -94,33 +94,10 @@ function calcAll() {
   calcPendaftaran();
 }
 
-function checkFridayCondition(tanggalStr) {
-  if (!tanggalStr) return false;
-  try {
-    const d = new Date(tanggalStr + 'T00:00:00');
-    const isFriday = d.getDay() === 5; // 5 = Jum'at
-    const container = document.getElementById('containerJmDrAli');
-    const badgeNotice = document.getElementById('badgeJumatNotice');
-
-    if (container) {
-      if (isFriday) {
-        container.classList.remove('d-none');
-        if (badgeNotice) {
-          badgeNotice.className = 'badge bg-success';
-          badgeNotice.textContent = '🟢 Hari Jum\'at (Aktif)';
-        }
-      } else {
-        container.classList.add('d-none');
-        if (badgeNotice) {
-          badgeNotice.className = 'badge bg-secondary opacity-75';
-          badgeNotice.textContent = 'JM dr. Ali hanya di Hari Jum\'at';
-        }
-      }
-    }
-    return isFriday;
-  } catch(e) {
-    return false;
-  }
+function checkFridayCondition(_tanggalStr) {
+  // Semua hari diperbolehkan input JM dr. Ali — fungsi ini dipertahankan
+  // agar tidak ada error pada pemanggilan yang masih ada di kode lama,
+  // tapi tidak melakukan apa-apa.
 }
 
 function calcApotek() {
@@ -138,21 +115,6 @@ function calcApotek() {
   document.getElementById('a-cash').value = cash > 0 ? formatNum(cash) : '';
   document.getElementById('a-totalPenjualan').textContent = fmt(totalPenjualan);
   document.getElementById('a-expTransfer').textContent = fmt(transfer);
-
-  // Live preview JM Bersih: tampilkan/sembunyikan sesuai nilai JM Ali Program
-  const jmDrZainuddinBersih = Math.max(0, jmDrZainuddin - jmDrAliProgram);
-  const bersihWrapper = document.getElementById('a-jmZainuddinBersihWrapper');
-  const bersihEl      = document.getElementById('a-jmZainuddinBersih');
-  if (bersihWrapper && bersihEl) {
-    if (jmDrAliProgram > 0) {
-      bersihWrapper.classList.remove('d-none');
-      bersihEl.textContent = fmt(jmDrZainuddinBersih);
-      // Tandai merah jika JM Ali Program > JM Zainuddin (hasil negatif)
-      bersihEl.style.color = jmDrZainuddinBersih <= 0 ? '#dc3545' : '';
-    } else {
-      bersihWrapper.classList.add('d-none');
-    }
-  }
 
   let totalExpRandom = 0;
   document.querySelectorAll('#a-expList .exp-nominal').forEach(inp => {
@@ -570,8 +532,6 @@ function buildRekap() {
   const aTransfer          = parseVal(document.getElementById('a-transfer').value);
   const aTotalPenj         = aResep + aBebas;
   const aCash              = Math.max(0, aTotalPenj - aTransfer);
-  // JM dr. Zainuddin bersih = input - JM Ali Program
-  const aJmDrZainuddinBersih = Math.max(0, aJmDrZainuddinRaw - aJmDrAliProgram);
 
   let aExpRandom = 0;
   const aExpRows = [];
@@ -592,9 +552,8 @@ function buildRekap() {
     <tr><td>Penjualan Pakai Resep</td><td class="text-end">${fmt(aResep)}</td></tr>
     <tr><td>Penjualan Bebas</td><td class="text-end">${fmt(aBebas)}</td></tr>
     <tr class="tr-total"><td>Total Penjualan Apotek</td><td class="text-end text-success">${fmt(aTotalPenj)}</td></tr>
-    ${aJmDrZainuddinRaw > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Zai (input)</td><td class="text-end text-info-emphasis">${fmt(aJmDrZainuddinRaw)}</td></tr>` : ''}
-    ${aJmDrAliProgram > 0 ? `<tr class="table-light text-muted"><td>&nbsp;&nbsp;− JM dr. Ali (Program)</td><td class="text-end text-warning-emphasis">−${fmt(aJmDrAliProgram)}</td></tr>` : ''}
-    ${aJmDrZainuddinBersih > 0 ? `<tr class="table-light fw-semibold"><td>↳ JM dr. Zai (bersih)</td><td class="text-end text-info">${fmt(aJmDrZainuddinBersih)}</td></tr>` : ''}
+    ${aJmDrZainuddinRaw > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Zainuddin</td><td class="text-end text-info-emphasis">${fmt(aJmDrZainuddinRaw)}</td></tr>` : ''}
+    ${aJmDrAliProgram > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Ali (Program)</td><td class="text-end text-primary-emphasis">${fmt(aJmDrAliProgram)}</td></tr>` : ''}
     ${aJmDrAliNonProgram > 0 ? `<tr class="table-light text-muted"><td>↳ JM dr. Ali (non Program)</td><td class="text-end text-success-emphasis">${fmt(aJmDrAliNonProgram)}</td></tr>` : ''}
     <tr class="table-light text-muted"><td>↳ Bayar Cash</td><td class="text-end">${fmt(aCash)}</td></tr>
     <tr class="table-light text-muted"><td>↳ Bayar Transfer</td><td class="text-end">${fmt(aTransfer)}</td></tr>
@@ -689,8 +648,6 @@ function buildPrintView() {
   const aTransfer          = parseVal(document.getElementById('a-transfer').value);
   const aTotalPenj         = aResep + aBebas;
   const aCash              = Math.max(0, aTotalPenj - aTransfer);
-  // JM dr. Zainuddin bersih = input - JM Ali Program
-  const aJmDrZainuddinBersih = Math.max(0, aJmDrZainuddinRaw - aJmDrAliProgram);
 
   let aExpRandom = 0;
   const aExpRows = [];
@@ -747,9 +704,8 @@ function buildPrintView() {
         ${tr('', 'Penjualan Pakai Resep', fmt(aResep))}
         ${tr('', 'Penjualan Bebas', fmt(aBebas))}
         ${tr('tr-total', 'Total Penjualan', fmt(aTotalPenj))}
-        ${aJmDrZainuddinRaw > 0 ? tr('tr-sub', '↳ JM dr. Zai (input)', fmt(aJmDrZainuddinRaw)) : ''}
-        ${aJmDrAliProgram > 0 ? tr('tr-sub', '&nbsp;&nbsp;− JM dr. Ali Program', fmt(aJmDrAliProgram)) : ''}
-        ${aJmDrZainuddinBersih > 0 ? tr('tr-sub', '↳ JM dr. Zai (bersih)', fmt(aJmDrZainuddinBersih)) : ''}
+        ${aJmDrZainuddinRaw > 0 ? tr('tr-sub', '↳ JM dr. Zainuddin', fmt(aJmDrZainuddinRaw)) : ''}
+        ${aJmDrAliProgram > 0 ? tr('tr-sub', '↳ JM dr. Ali (Program)', fmt(aJmDrAliProgram)) : ''}
         ${aJmDrAliNonProgram > 0 ? tr('tr-sub', '↳ JM dr. Ali (non Program) [+]', fmt(aJmDrAliNonProgram)) : ''}
         ${tr('tr-sub', '↳ Bayar Cash', fmt(aCash))}
         ${tr('tr-sub', '↳ Bayar Transfer', fmt(aTransfer))}
