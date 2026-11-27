@@ -146,7 +146,7 @@ declare(strict_types=1);
                 <tbody id="tbodyScreen"></tbody>
                 <tfoot class="table-light fw-bold">
                   <tr>
-                    <td colspan="2" class="text-end">JUMLAH TOTAL:</td>
+                    <td colspan="3" class="text-end">JUMLAH TOTAL:</td>
                     <td class="text-end text-primary fs-6" id="sumTotalText">Rp 0</td>
                   </tr>
                 </tfoot>
