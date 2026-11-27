@@ -138,6 +138,7 @@ declare(strict_types=1);
                 <thead class="table-light">
                   <tr>
                     <th class="text-center" width="50">No</th>
+                    <th style="display:none">_tanggal_sort</th>
                     <th>Tanggal Laporan</th>
                     <th class="text-center" width="130">Jumlah Item Lab</th>
                     <th class="text-end" width="240">Total Laboratorium</th>
@@ -146,7 +147,7 @@ declare(strict_types=1);
                 <tbody id="tbodyScreen"></tbody>
                 <tfoot class="table-light fw-bold">
                   <tr>
-                    <td colspan="3" class="text-end">JUMLAH TOTAL:</td>
+                    <td colspan="4" class="text-end">JUMLAH TOTAL:</td>
                     <td class="text-end text-warning fs-6" id="sumTotalText">Rp 0</td>
                   </tr>
                 </tfoot>
@@ -271,7 +272,8 @@ async function loadData(start = '', end = '') {
 
     const tableData = rows.map((r, idx) => [
       idx + 1,
-      `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
+      r.tanggal,  // hidden sort key (YYYY-MM-DD)
+      `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglPrint(r.tanggal)}</span>`,
       `<span class="badge bg-secondary">${r.item_count || 0} item</span>`,
       `<span class="fw-bold text-warning text-dark">${fmt(r.total_lab)}</span>`
     ]);
@@ -285,11 +287,13 @@ async function loadData(start = '', end = '') {
       data: tableData,
       language: dtIndonesian,
       pageLength: 15,
-      order: [[1, 'desc']],
+      order: [[1, 'asc']],
       columnDefs: [
         { targets: 0, className: 'text-center', orderable: false, searchable: false },
-        { targets: [2], className: 'text-center', orderable: false },
-        { targets: [3], className: 'text-end' }
+        { targets: 1, visible: false, searchable: false },
+        { targets: 2, orderData: 1 },
+        { targets: [3], className: 'text-center', orderable: false },
+        { targets: [4], className: 'text-end' }
       ],
       responsive: true
     });

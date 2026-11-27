@@ -138,6 +138,7 @@ declare(strict_types=1);
                 <thead class="table-light">
                   <tr>
                     <th class="text-center" width="50">No</th>
+                    <th style="display:none">_tanggal_sort</th>
                     <th>Tanggal Laporan</th>
                     <th class="text-center" width="160">Jumlah Pasien</th>
                     <th class="text-end" width="220">Total Nominal (Rp)</th>
@@ -146,7 +147,7 @@ declare(strict_types=1);
                 <tbody id="tbodyScreen"></tbody>
                 <tfoot class="table-light fw-bold">
                   <tr>
-                    <td colspan="2" class="text-end">JUMLAH TOTAL:</td>
+                    <td colspan="3" class="text-end">JUMLAH TOTAL:</td>
                     <td class="text-center text-warning fs-6" id="sumPasien">0 Pasien</td>
                     <td class="text-end text-success fs-6" id="sumNominal">Rp 0</td>
                   </tr>
@@ -276,7 +277,8 @@ async function loadData(start = '', end = '') {
       const rowNom = Number(r.total_nominal !== undefined ? r.total_nominal : (r.fisio_90_total !== undefined ? r.fisio_90_total : (r.fisio_90_pasien * 90000))) || 0;
       return [
         idx + 1,
-        `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
+        r.tanggal,  // hidden sort key (YYYY-MM-DD)
+        `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglPrint(r.tanggal)}</span>`,
         `<span class="badge bg-warning text-dark fs-6">${r.fisio_90_pasien} Pasien</span>`,
         `<span class="fw-bold text-success">${fmt(rowNom)}</span>`
       ];
@@ -291,11 +293,13 @@ async function loadData(start = '', end = '') {
       data: tableData,
       language: dtIndonesian,
       pageLength: 15,
-      order: [[1, 'desc']],
+      order: [[1, 'asc']],
       columnDefs: [
         { targets: 0, className: 'text-center', orderable: false, searchable: false },
-        { targets: [2], className: 'text-center', orderable: false },
-        { targets: [3], className: 'text-end' }
+        { targets: 1, visible: false, searchable: false },
+        { targets: 2, orderData: 1 },
+        { targets: [3], className: 'text-center', orderable: false },
+        { targets: [4], className: 'text-end' }
       ],
       responsive: true
     });

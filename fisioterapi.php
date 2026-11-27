@@ -149,6 +149,7 @@ declare(strict_types=1);
                 <thead class="table-light">
                   <tr>
                     <th class="text-center" width="50">No</th>
+                    <th style="display:none">_tanggal_sort</th>
                     <th>Tanggal Laporan</th>
                     <th class="text-center" width="130">Pasien 120rb</th>
                     <th class="text-end" width="160">Total 120rb</th>
@@ -160,7 +161,7 @@ declare(strict_types=1);
                 <tbody id="tbodyScreen"></tbody>
                 <tfoot class="table-light fw-bold">
                   <tr>
-                    <td colspan="2" class="text-end">JUMLAH TOTAL:</td>
+                    <td colspan="3" class="text-end">JUMLAH TOTAL:</td>
                     <td class="text-center text-primary" id="sumP120">0</td>
                     <td class="text-end text-primary" id="sumNom120">Rp 0</td>
                     <td class="text-center text-warning" id="sumP90">0</td>
@@ -306,7 +307,8 @@ async function loadData(start = '', end = '') {
 
       return [
         idx + 1,
-        `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
+        r.tanggal,  // hidden sort key (YYYY-MM-DD)
+        `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglPrint(r.tanggal)}</span>`,
         `<span class="badge bg-primary">${r.fisio_120_pasien}</span>`,
         `<span class="text-primary fw-semibold">${fmt(nom120)}</span>`,
         `<span class="badge bg-warning text-dark">${r.fisio_90_pasien}</span>`,
@@ -324,11 +326,13 @@ async function loadData(start = '', end = '') {
       data: tableData,
       language: dtIndonesian,
       pageLength: 15,
-      order: [[1, 'desc']],
+      order: [[1, 'asc']],
       columnDefs: [
         { targets: 0, className: 'text-center', orderable: false, searchable: false },
-        { targets: [2, 4], className: 'text-center', orderable: false },
-        { targets: [3, 5, 6], className: 'text-end' }
+        { targets: 1, visible: false, searchable: false },
+        { targets: 2, orderData: 1 },
+        { targets: [3, 5], className: 'text-center', orderable: false },
+        { targets: [4, 6, 7], className: 'text-end' }
       ],
       responsive: true
     });

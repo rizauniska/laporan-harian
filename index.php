@@ -198,6 +198,7 @@ declare(strict_types=1);
               <thead class="table-light">
                 <tr>
                   <th class="text-center" width="45">No</th>
+                  <th style="display:none">_tanggal_sort</th>
                   <th width="180">Tanggal Laporan</th>
                   <th class="text-end" width="130">Total Kas Awal</th>
                   <th class="text-end" width="130">Total Pemasukan</th>
@@ -292,6 +293,14 @@ function fmtTglIndo(dateStr) {
     });
   } catch (_) { return dateStr; }
 }
+function fmtTglPrint(dateStr) {
+  if (!dateStr) return '-';
+  try {
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString('id-ID', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+  } catch (_) { return dateStr; }
+}
 
 function showToast(msg, bgClass = 'bg-dark') {
   const toastEl = document.getElementById('appToast');
@@ -353,7 +362,8 @@ function filterAndRender() {
 
   const tableData = filtered.map((d, idx) => [
     idx + 1,
-    `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(d.tanggal)}</span>`,
+    d.tanggal,  // hidden sort key (YYYY-MM-DD)
+    `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglPrint(d.tanggal)}</span>`,
     fmt(d.tot_kas_awal),
     `<span class="fw-bold text-success">${fmt(d.tot_pemasukan)}</span>`,
     `<span class="fw-bold text-danger">${fmt(d.tot_pengeluaran)}</span>`,
@@ -372,11 +382,13 @@ function filterAndRender() {
     data: tableData,
     language: dtIndonesian,
     pageLength: 10,
-    order: [[1, 'desc']],
+    order: [[1, 'asc']],
     columnDefs: [
       { targets: 0, className: 'text-center', orderable: false, searchable: false },
-      { targets: [8], className: 'text-center', orderable: false },
-      { targets: [2, 3, 4, 5, 6, 7], className: 'text-end' }
+      { targets: 1, visible: false, searchable: false },
+      { targets: 2, orderData: 1 },
+      { targets: [9], className: 'text-center', orderable: false },
+      { targets: [3, 4, 5, 6, 7, 8], className: 'text-end' }
     ],
     responsive: true
   });

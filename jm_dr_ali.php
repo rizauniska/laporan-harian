@@ -150,6 +150,7 @@ declare(strict_types=1);
                 <thead class="table-light">
                   <tr>
                     <th class="text-center" width="50">No</th>
+                    <th style="display:none">_tanggal_sort</th>
                     <th>Tanggal Laporan</th>
                     <th class="text-end" width="180">JM dr. Ali Program</th>
                     <th class="text-end" width="180">JM dr. Ali Non-Prog</th>
@@ -159,7 +160,7 @@ declare(strict_types=1);
                 <tbody id="tbodyScreen"></tbody>
                 <tfoot class="table-light fw-bold">
                   <tr>
-                    <td colspan="2" class="text-end">JUMLAH TOTAL:</td>
+                    <td colspan="3" class="text-end">JUMLAH TOTAL:</td>
                     <td class="text-end text-info" id="sumProgram">Rp 0</td>
                     <td class="text-end text-primary" id="sumNonProg">Rp 0</td>
                     <td class="text-end text-success fs-6" id="sumTotal">Rp 0</td>
@@ -294,7 +295,8 @@ async function loadData(start = '', end = '') {
       const rowTotal = (Number(r.jm_dr_ali_program) || 0) + (Number(r.jm_dr_ali_non_program) || 0);
       return [
         idx + 1,
-        `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglIndo(r.tanggal)}</span>`,
+        r.tanggal,  // hidden sort key (YYYY-MM-DD)
+        `<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-calendar3 me-1"></i>${fmtTglPrint(r.tanggal)}</span>`,
         `<span class="text-info fw-semibold">${fmt(r.jm_dr_ali_program)}</span>`,
         `<span class="text-primary fw-semibold">${fmt(r.jm_dr_ali_non_program)}</span>`,
         `<span class="text-success fw-bold">${fmt(rowTotal)}</span>`
@@ -310,10 +312,12 @@ async function loadData(start = '', end = '') {
       data: tableData,
       language: dtIndonesian,
       pageLength: 15,
-      order: [[1, 'desc']],
+      order: [[1, 'asc']],
       columnDefs: [
         { targets: 0, className: 'text-center', orderable: false, searchable: false },
-        { targets: [2, 3, 4], className: 'text-end' }
+        { targets: 1, visible: false, searchable: false },
+        { targets: 2, orderData: 1 },
+        { targets: [3, 4, 5], className: 'text-end' }
       ],
       responsive: true
     });
